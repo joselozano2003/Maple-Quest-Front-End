@@ -16,7 +16,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Home", systemImage: "house.fill")
             }
-            Text("Map")
+            MapView()
             .tabItem {
                 Label("Map", systemImage: "map.fill")
             }
@@ -29,7 +29,6 @@ struct ContentView: View {
                 Label("Profile", systemImage: "person.fill")
             }
         }
-        .padding()
         .tint(.red)
     }
 }
