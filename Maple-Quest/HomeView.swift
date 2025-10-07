@@ -10,7 +10,15 @@ import SwiftUI
 struct HomeView: View {
     
     var body: some View {
-        Text("Home Screen")            
+        // Home view title
+        VStack(alignment: .leading) {
+            Text("Explore")
+            HStack {
+                Text("Beautiful").bold()
+                Text("Canada!").bold().foregroundColor(.red)
+            }
+        }
+        .font(.largeTitle)
     }
 }
 

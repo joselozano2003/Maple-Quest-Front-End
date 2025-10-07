@@ -32,7 +32,6 @@ struct MapView: View {
             Marker("Banff National Park", coordinate: banff)
             Marker("HopeWell Rocks Provincial Park", coordinate: hopewellRocks)
         }
-         
     }
 }
 
