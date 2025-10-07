@@ -5,11 +5,14 @@
 //  Created by Jose Lozano on 10/6/25.
 //
 
-// Hola 12244
 
 import SwiftUI
 
 struct ContentView: View {
+    
+    // Hardocoded user to make testing easier
+    let currentUser = User.sample
+    
     var body: some View {
         TabView {
             HomeView()
@@ -24,7 +27,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Achievements", systemImage: "medal.fill")
             }
-            ProfileView()
+            ProfileView(user: currentUser)
             .tabItem {
                 Label("Profile", systemImage: "person.fill")
             }
