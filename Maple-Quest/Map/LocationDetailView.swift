@@ -10,6 +10,7 @@ import SwiftUI
 struct LocationDetailView: View {
     
     var landmark: Landmark
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ScrollView {
@@ -20,7 +21,6 @@ struct LocationDetailView: View {
                     .scaledToFill()
                     .frame(maxWidth: .infinity)
                     .clipped()
-                    .ignoresSafeArea(edges: .top)
                     .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
             }
             
@@ -48,5 +48,10 @@ struct LocationDetailView: View {
                     .padding(.leading)
             }
         }
+        .ignoresSafeArea(edges: .top)
     }
+}
+
+#Preview {
+    ContentView()
 }
