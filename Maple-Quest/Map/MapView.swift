@@ -43,25 +43,23 @@ let landmarks = [
 
 struct MapView: View {
     
-    @State private var selectedLandmark: Landmark? = nil
-    
     var body: some View {
-        Map {
-            ForEach(landmarks) { landmark in
-                Annotation(landmark.name, coordinate: landmark.location) {
-                    Button {
-                        selectedLandmark = landmark
-                    } label: {
-                        Image(systemName: "mappin.circle.fill")
-                            .font(.title)
-                            .foregroundColor(.red)
+        NavigationStack {
+            Map {
+                ForEach(landmarks) { landmark in
+                    Annotation(landmark.name, coordinate: landmark.location) {
+                        NavigationLink(value: landmark) {
+                            Image(systemName: "mappin.circle.fill")
+                                .font(.title)
+                                .foregroundColor(.red)
+                        }
                     }
+                    
                 }
-                
             }
-        }
-        .fullScreenCover(item: $selectedLandmark) { landmark in
-            LocationDetailView(landmark: landmark)
+            .navigationDestination(for: Landmark.self) { landmark in
+                LocationDetailView(landmark: landmark)
+            }
         }
     }
 }
