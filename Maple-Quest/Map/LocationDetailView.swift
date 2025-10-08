@@ -16,18 +16,20 @@ struct LocationDetailView: View {
     var body: some View {
         ScrollView {
             VStack {
-                // Image Section
-                Image(landmark.imageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity)
-                    .clipped()
-                    .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
+                GeometryReader { geometry in
+                    // Image Section
+                    Image(landmark.imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 500)
+                        .frame(maxWidth: geometry.size.width)
+                        .clipped()
+                        .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
+                        
+                }
+                .frame(height: 500)
+                .padding(.bottom, 20) // Padding between the image and info sections
             }
-            
-            .frame(height: 375) // Frame height of the image
-            .padding(.bottom, 110) // Padding between the image and info sections
-            
             // Info Section
             VStack(alignment: .leading) {
                 // Title
