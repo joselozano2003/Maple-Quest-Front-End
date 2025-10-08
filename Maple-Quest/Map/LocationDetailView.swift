@@ -12,40 +12,41 @@ struct LocationDetailView: View {
     var landmark: Landmark
     
     var body: some View {
-        
-        VStack {
-            // Image of the landmark
-            Image(landmark.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(maxWidth: .infinity)
-                .clipped()
-                .ignoresSafeArea(edges: .top)
+        ScrollView {
+            VStack {
+                // Image Section
+                Image(landmark.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+                    .ignoresSafeArea(edges: .top)
+                    .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
             }
-        
-        
-        VStack {
+            
+            .frame(height: 375) // Frame height of the image
+            .padding(.bottom, 110) // Padding between the image and info sections
+            
+            // Info Section
             VStack(alignment: .leading) {
-                // Landmark title
+                // Title
                 Text(landmark.name)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.bottom, 5)
+                    .font(.title).bold()
+                    .padding(.bottom, 2)
                     .padding(.leading)
-                // Landmark location (i.e. city, province and country)
+                // Location
                 Text("\(landmark.province), \(landmark.country)")
                     .font(.system(size: 18))
                     .foregroundColor(.gray)
                     .padding(.leading)
                 Divider()
-                // Description of landmark
+                // Description
                 Text(landmark.description)
                     .font(.system(size: 17))
                     .foregroundColor(.gray)
+                    .padding(.top, 5)
                     .padding(.leading)
             }
-            Spacer()
         }
-        
     }
 }
