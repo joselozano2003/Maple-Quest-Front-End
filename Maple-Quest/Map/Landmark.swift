@@ -7,7 +7,7 @@
 
 import CoreLocation
 
-struct Landmark: Identifiable {
+struct Landmark: Identifiable, Hashable, Equatable {
     var id = UUID().uuidString
     var name: String
     var province: String
@@ -15,5 +15,13 @@ struct Landmark: Identifiable {
     var description: String
     var imageName: String
     var location: CLLocationCoordinate2D
+    
+    static func == (lhs: Landmark, rhs: Landmark) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
