@@ -10,6 +10,7 @@ import SwiftUI
 struct LocationDetailView: View {
     
     var landmark: Landmark
+    @State private var isPhotoUploaded: Bool = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -49,6 +50,22 @@ struct LocationDetailView: View {
             }
         }
         .ignoresSafeArea(edges: .top)
+        .navigationTitle("Details")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if isPhotoUploaded == true {
+                    Button {
+                    } label: {
+                        Image(systemName: "checkmark.circle.fill")
+                    }
+                } else {
+                    Button {
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                    }
+                }
+            }
+        }
     }
 }
 
