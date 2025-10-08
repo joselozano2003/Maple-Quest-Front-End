@@ -53,11 +53,8 @@ struct LocationDetailView: View {
         .navigationTitle("Details")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                if isPhotoUploaded == true {
-                    Button {
-                    } label: {
-                        Image(systemName: "checkmark.circle.fill")
-                    }
+                if isPhotoUploaded {
+                    Image(systemName: "checkmark.circle.fill")
                 } else {
                     Button {
                     } label: {
