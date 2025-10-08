@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    // Hardocoded user to make testing easier
+    // Hardcoded user to make testing easier
     let currentUser = User.sample
     
     var body: some View {
