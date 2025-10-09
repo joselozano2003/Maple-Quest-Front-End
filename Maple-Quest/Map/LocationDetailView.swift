@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct LocationDetailView: View {
     
     var landmark: Landmark
     @State private var isPhotoUploaded: Bool = false
+    @State private var photosPickerItem: PhotosPickerItem?
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -58,13 +60,25 @@ struct LocationDetailView: View {
                 if isPhotoUploaded {
                     Image(systemName: "checkmark.circle.fill")
                 } else {
-                    Button {
-                    } label: {
+                    PhotosPicker(selection: $photosPickerItem, matching: .images) {
                         Image(systemName: "plus.circle.fill")
                     }
                 }
             }
         }
+        .onChange(of: photosPickerItem) { _, newItem in
+                Task {
+                    if let newItem {
+                        if let data = try? await newItem.loadTransferable(type: Data.self) {
+                            if let image = UIImage(data: data) {
+                                // Upload to a gallery in app
+                                isPhotoUploaded = true
+                            }
+                        }
+                        photosPickerItem = nil
+                    }
+                }
+            }
     }
 }
 
