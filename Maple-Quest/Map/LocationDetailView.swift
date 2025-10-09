@@ -12,7 +12,9 @@ struct LocationDetailView: View {
     
     var landmark: Landmark
     @State private var isPhotoUploaded: Bool = false
+    @State private var selectedCameraOption: String?
     @State private var photosPickerItem: PhotosPickerItem?
+    @State private var showPhotoPicker: Bool = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -60,12 +62,27 @@ struct LocationDetailView: View {
                 if isPhotoUploaded {
                     Image(systemName: "checkmark.circle.fill")
                 } else {
-                    PhotosPicker(selection: $photosPickerItem, matching: .images) {
+                    Menu {
+                        Button {
+                            selectedCameraOption = "Take Photo"
+                        } label: {
+                            Label("Take Photo", systemImage: "camera.fill")
+                                .tint(.white)
+                        }
+                        Button {
+                            selectedCameraOption = "Choose Photo"
+                            showPhotoPicker = true
+                        } label: {
+                            Label("Choose Photo", systemImage: "photo.on.rectangle")
+                                .tint(.white)
+                        }
+                    } label: {
                         Image(systemName: "plus.circle.fill")
                     }
                 }
             }
         }
+        .photosPicker(isPresented: $showPhotoPicker, selection: $photosPickerItem, matching: .images)
         .onChange(of: photosPickerItem) { _, newItem in
                 Task {
                     if let newItem {
@@ -81,6 +98,7 @@ struct LocationDetailView: View {
             }
     }
 }
+
 
 #Preview {
     ContentView()
