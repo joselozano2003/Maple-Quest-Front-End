@@ -12,10 +12,12 @@ struct LocationDetailView: View {
     
     var landmark: Landmark
     var onVisited: (Bool) -> Void
+    @State private var galleryImages: [UIImage] = []
     @State private var isPhotoUploaded: Bool = false
     @State private var selectedCameraOption: String?
     @State private var photosPickerItem: PhotosPickerItem?
     @State private var showPhotoPicker: Bool = false
+    @State private var showPhotoGallery: Bool = false
     @State private var selectedImage: UIImage?
     @State private var showCamera: Bool = false
     @Environment(\.dismiss) private var dismiss
@@ -85,6 +87,14 @@ struct LocationDetailView: View {
                     }
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    PhotoGallery(images: $galleryImages)
+                        .navigationTitle("Gallery")
+                } label: {
+                    Image(systemName: "square.grid.2x2")
+                }
+            }
         }
         .fullScreenCover(isPresented: $showCamera) {
             CameraView(image: $selectedImage)
@@ -92,7 +102,7 @@ struct LocationDetailView: View {
         }
         .onChange(of: selectedImage) { _, newItem in
             if let newItem {
-                handlePhotoUpload()
+                handlePhotoUpload(image: newItem)
             }
         }
         .photosPicker(isPresented: $showPhotoPicker, selection: $photosPickerItem, matching: .images)
@@ -101,8 +111,7 @@ struct LocationDetailView: View {
                 if let newItem {
                     if let data = try? await newItem.loadTransferable(type: Data.self) {
                         if let image = UIImage(data: data) {
-                            // Upload to a gallery in app
-                            handlePhotoUpload()
+                            handlePhotoUpload(image: image)
                         }
                     }
                     photosPickerItem = nil
@@ -111,9 +120,11 @@ struct LocationDetailView: View {
         }
     }
     
-    private func handlePhotoUpload() {
+    private func handlePhotoUpload(image: UIImage) {
+        galleryImages.append(image)
         isPhotoUploaded = true
         onVisited(true)
+        showPhotoGallery = true
     }
 }
 
