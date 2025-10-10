@@ -88,9 +88,8 @@ struct LocationDetailView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    PhotoGallery(images: $galleryImages)
-                        .navigationTitle("Gallery")
+                Button {
+                    showPhotoGallery = true
                 } label: {
                     Image(systemName: "square.grid.2x2")
                 }
@@ -117,6 +116,10 @@ struct LocationDetailView: View {
                     photosPickerItem = nil
                 }
             }
+        }
+        .navigationDestination(isPresented: $showPhotoGallery) {
+            PhotoGallery(images: $galleryImages)
+                .navigationTitle("Gallery")
         }
     }
     
