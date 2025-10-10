@@ -15,6 +15,8 @@ struct LocationDetailView: View {
     @State private var selectedCameraOption: String?
     @State private var photosPickerItem: PhotosPickerItem?
     @State private var showPhotoPicker: Bool = false
+    @State private var selectedImage: UIImage?
+    @State private var showCamera: Bool = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -65,6 +67,7 @@ struct LocationDetailView: View {
                     Menu {
                         Button {
                             selectedCameraOption = "Take Photo"
+                            showCamera = true
                         } label: {
                             Label("Take Photo", systemImage: "camera.fill")
                                 .tint(.white)
@@ -80,6 +83,15 @@ struct LocationDetailView: View {
                         Image(systemName: "plus.circle.fill")
                     }
                 }
+            }
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraView(image: $selectedImage)
+                .ignoresSafeArea(edges: .all)
+        }
+        .onChange(of: selectedImage) { _, newItem in
+            if let newItem {
+                isPhotoUploaded = true
             }
         }
         .photosPicker(isPresented: $showPhotoPicker, selection: $photosPickerItem, matching: .images)
