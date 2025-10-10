@@ -11,10 +11,13 @@ import PhotosUI
 struct LocationDetailView: View {
     
     var landmark: Landmark
+    var onVisited: (Bool) -> Void
+    @State private var galleryImages: [UIImage] = []
     @State private var isPhotoUploaded: Bool = false
     @State private var selectedCameraOption: String?
     @State private var photosPickerItem: PhotosPickerItem?
     @State private var showPhotoPicker: Bool = false
+    @State private var showPhotoGallery: Bool = false
     @State private var selectedImage: UIImage?
     @State private var showCamera: Bool = false
     @Environment(\.dismiss) private var dismiss
@@ -84,6 +87,13 @@ struct LocationDetailView: View {
                     }
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showPhotoGallery = true
+                } label: {
+                    Image(systemName: "square.grid.2x2")
+                }
+            }
         }
         .fullScreenCover(isPresented: $showCamera) {
             CameraView(image: $selectedImage)
@@ -91,23 +101,33 @@ struct LocationDetailView: View {
         }
         .onChange(of: selectedImage) { _, newItem in
             if let newItem {
-                isPhotoUploaded = true
+                handlePhotoUpload(image: newItem)
             }
         }
         .photosPicker(isPresented: $showPhotoPicker, selection: $photosPickerItem, matching: .images)
         .onChange(of: photosPickerItem) { _, newItem in
-                Task {
-                    if let newItem {
-                        if let data = try? await newItem.loadTransferable(type: Data.self) {
-                            if let image = UIImage(data: data) {
-                                // Upload to a gallery in app
-                                isPhotoUploaded = true
-                            }
+            Task {
+                if let newItem {
+                    if let data = try? await newItem.loadTransferable(type: Data.self) {
+                        if let image = UIImage(data: data) {
+                            handlePhotoUpload(image: image)
                         }
-                        photosPickerItem = nil
                     }
+                    photosPickerItem = nil
                 }
             }
+        }
+        .navigationDestination(isPresented: $showPhotoGallery) {
+            PhotoGallery(images: $galleryImages)
+                .navigationTitle("Gallery")
+        }
+    }
+    
+    private func handlePhotoUpload(image: UIImage) {
+        galleryImages.append(image)
+        isPhotoUploaded = true
+        onVisited(true)
+        showPhotoGallery = true
     }
 }
 
