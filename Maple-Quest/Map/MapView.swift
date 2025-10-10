@@ -17,7 +17,8 @@ let landmarks = [
         location: CLLocationCoordinate2D(
             latitude: 43.09468530054129,
             longitude: -79.03996936268442
-        )
+        ),
+        isVisited: false
     ),
     Landmark(
         name: "Hopewell Rocks Provincial Park",
@@ -27,7 +28,8 @@ let landmarks = [
         location: CLLocationCoordinate2D(
             latitude: 45.817654979524015,
             longitude: -64.57845776218284
-        )
+        ),
+        isVisited: false
     ),
     Landmark(
         name: "Banff National Park",
@@ -37,28 +39,32 @@ let landmarks = [
         location: CLLocationCoordinate2D(
             latitude: 51.497407682404955,
             longitude: -115.9261679966291
-        )
+        ),
+        isVisited: false
     )
 ]
 
 struct MapView: View {
-    
+    @State private var visitedLandmarks: Set<String> = []
     var body: some View {
         NavigationStack {
             Map {
                 ForEach(landmarks) { landmark in
                     Annotation(landmark.name, coordinate: landmark.location) {
-                        NavigationLink(value: landmark) {
+                        NavigationLink {
+                            LocationDetailView(landmark: landmark) { visited in
+                                if visited {
+                                    visitedLandmarks.insert(landmark.name)
+                                }
+                            }
+                        } label: {
                             Image(systemName: "mappin.circle.fill")
                                 .font(.title)
-                                .foregroundColor(.red)
+                                .foregroundColor(visitedLandmarks.contains(landmark.name) ? .orange : .red)
+                                .shadow(color: .white, radius: 2, x: 0, y: 0)
                         }
                     }
-                    
                 }
-            }
-            .navigationDestination(for: Landmark.self) { landmark in
-                LocationDetailView(landmark: landmark)
             }
         }
     }

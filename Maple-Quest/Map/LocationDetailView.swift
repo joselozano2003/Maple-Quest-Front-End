@@ -11,6 +11,7 @@ import PhotosUI
 struct LocationDetailView: View {
     
     var landmark: Landmark
+    var onVisited: (Bool) -> Void
     @State private var isPhotoUploaded: Bool = false
     @State private var selectedCameraOption: String?
     @State private var photosPickerItem: PhotosPickerItem?
@@ -91,23 +92,28 @@ struct LocationDetailView: View {
         }
         .onChange(of: selectedImage) { _, newItem in
             if let newItem {
-                isPhotoUploaded = true
+                handlePhotoUpload()
             }
         }
         .photosPicker(isPresented: $showPhotoPicker, selection: $photosPickerItem, matching: .images)
         .onChange(of: photosPickerItem) { _, newItem in
-                Task {
-                    if let newItem {
-                        if let data = try? await newItem.loadTransferable(type: Data.self) {
-                            if let image = UIImage(data: data) {
-                                // Upload to a gallery in app
-                                isPhotoUploaded = true
-                            }
+            Task {
+                if let newItem {
+                    if let data = try? await newItem.loadTransferable(type: Data.self) {
+                        if let image = UIImage(data: data) {
+                            // Upload to a gallery in app
+                            handlePhotoUpload()
                         }
-                        photosPickerItem = nil
                     }
+                    photosPickerItem = nil
                 }
             }
+        }
+    }
+    
+    private func handlePhotoUpload() {
+        isPhotoUploaded = true
+        onVisited(true)
     }
 }
 
