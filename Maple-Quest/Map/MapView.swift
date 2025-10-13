@@ -45,7 +45,7 @@ let landmarks = [
 ]
 
 struct MapView: View {
-    @State private var visitedLandmarks: Set<String> = []
+    @State private var visitedLandmarks: [String] = []
     var body: some View {
         NavigationStack {
             Map {
@@ -53,8 +53,8 @@ struct MapView: View {
                     Annotation(landmark.name, coordinate: landmark.location) {
                         NavigationLink {
                             LocationDetailView(landmark: landmark) { visited in
-                                if visited {
-                                    visitedLandmarks.insert(landmark.name)
+                                if visited && !visitedLandmarks.contains(landmark.name) {
+                                    visitedLandmarks.append(landmark.name)
                                 }
                             }
                         } label: {
@@ -65,6 +65,28 @@ struct MapView: View {
                         }
                     }
                 }
+            }
+            .onAppear {
+                loadVisitedLandmarks()
+            }
+            .onChange(of: visitedLandmarks) { _, _ in
+                saveVisitedLandmarks()
+            }
+        }
+    }
+    
+    func saveVisitedLandmarks() {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(visitedLandmarks) {
+            UserDefaults.standard.set(encoded, forKey: "visitedLandmarks")
+        }
+    }
+    
+    func loadVisitedLandmarks() {
+        if let savedData = UserDefaults.standard.data(forKey: "visitedLandmarks") {
+            let decoder = JSONDecoder()
+            if let loaded = try? decoder.decode([String].self, from: savedData) {
+                visitedLandmarks = loaded
             }
         }
     }
