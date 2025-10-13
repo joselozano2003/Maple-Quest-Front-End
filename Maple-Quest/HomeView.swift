@@ -34,6 +34,7 @@ struct HomeView: View {
                 Text("Explore Landmarks Near You")
                     .font(.system(size: 22)).bold()
                     .padding(.top)
+                MapPreview()
                 // Top landmarks in Canada
                 Text("Highlights")
                     .font(.system(size: 22)).bold()

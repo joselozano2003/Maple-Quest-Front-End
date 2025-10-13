@@ -18,7 +18,7 @@ struct MapPreview: View {
         )
     
     var body: some View {
-        Map() {}
+        Map(position: $cameraPosition) {}
         .frame(height: 200)
         .cornerRadius(15)
         .shadow(radius: 5)
