@@ -27,11 +27,11 @@ struct ProfileView: View {
                             .padding(.top, 16)
                         
                         // Name & Email
-                        Text("Leonardo")
+                        Text("\(user.firstName)")
                             .font(.title2)
                             .fontWeight(.semibold)
                         
-                        Text("leonardo@gmail.com")
+                        Text("\(user.email)")
                             .foregroundColor(.gray)
                             .font(.subheadline)
                     }
