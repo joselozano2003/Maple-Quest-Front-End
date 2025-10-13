@@ -9,6 +9,13 @@ import SwiftUI
 import MapKit
 
 struct MapPreview: View {
+    @StateObject private var locationManager = LocationManager()
+    @State private var cameraPosition = MapCameraPosition.region(
+            MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 51.0447, longitude: -114.0611), // Default Calgary
+                span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
+            )
+        )
     
     var body: some View {
         Map() {}
