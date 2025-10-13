@@ -121,6 +121,13 @@ struct LocationDetailView: View {
             PhotoGallery(images: $galleryImages)
                 .navigationTitle("Gallery")
         }
+        .onAppear {
+            if let savedImage = loadImage(for: landmark.name) {
+                galleryImages = [savedImage]
+                isPhotoUploaded = true
+            }
+        }
+
     }
     
     private func handlePhotoUpload(image: UIImage) {
@@ -128,7 +135,23 @@ struct LocationDetailView: View {
         isPhotoUploaded = true
         onVisited(true)
         showPhotoGallery = true
+        saveImage(image, for: landmark.name)
     }
+    
+    func saveImage(_ image: UIImage, for landmarkName: String) {
+        if let data = image.jpegData(compressionQuality: 0.8) {
+            UserDefaults.standard.set(data, forKey: "photo_\(landmarkName)")
+        }
+    }
+
+    func loadImage(for landmarkName: String) -> UIImage? {
+        if let data = UserDefaults.standard.data(forKey: "photo_\(landmarkName)"),
+           let image = UIImage(data: data) {
+            return image
+        }
+        return nil
+    }
+
 }
 
 
