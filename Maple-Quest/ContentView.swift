@@ -15,7 +15,7 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            HomeView()
+            HomeView(user: currentUser)
             .tabItem {
                 Label("Home", systemImage: "house.fill")
             }

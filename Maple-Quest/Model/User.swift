@@ -31,12 +31,12 @@ struct User: Identifiable, Codable {
     // Example static mock for previews or testing
     static let sample = User(
         id: UUID(),
-        firstName: "Leonardo",
-        lastName: "Ahmed",
-        email: "leonardo@gmail.com",
-        location: "Sylhet Bangladesh",
-        phoneCode: "+88",
-        phoneNumber: "01758-000666",
+        firstName: "John",
+        lastName: "Smith",
+        email: "john.smith@ucalgary.ca",
+        location: "Calgary, AB, Canada",
+        phoneCode: "+1",
+        phoneNumber: "(403) 758-0006",
         avatarSystemImage: "person.crop.circle.fill"
     )
 }
