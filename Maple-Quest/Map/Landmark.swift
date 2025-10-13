@@ -22,7 +22,7 @@ struct Landmark: Identifiable, Hashable, Equatable {
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
+            hasher.combine(id)
+        }
 }
 
