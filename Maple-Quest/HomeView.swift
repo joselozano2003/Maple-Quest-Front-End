@@ -32,11 +32,13 @@ struct HomeView: View {
                         .padding(.top)
                     Text("You have visited 0 of \(landmarks.count) Canadian landmarks!")
                         .font(.subheadline)
+                    
                     // Mini map view of landmarks nearby
                     Text("Explore Landmarks Near You")
                         .font(.system(size: 22)).bold()
                         .padding(.top)
                     MapPreview()
+                    
                     // Top landmarks in Canada
                     Text("Highlights")
                         .font(.system(size: 22)).bold()
