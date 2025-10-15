@@ -9,14 +9,19 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
-    @State private var visitedLandmarks: [String] = []
+    // This is now a binding to the state in ContentView
+    @Binding var visitedLandmarks: [String]
+    // Get the location manager from the environment
+    @EnvironmentObject var locationManager: LocationManager
+    
     var body: some View {
         NavigationStack {
             Map {
                 ForEach(landmarks) { landmark in
                     Annotation(landmark.name, coordinate: landmark.location) {
                         NavigationLink {
-                            LocationDetailView(landmark: landmark) { visited in
+                            // Pass the user's current location to the detail view
+                            LocationDetailView(landmark: landmark, userLocation: locationManager.userLocation) { visited in
                                 if visited && !visitedLandmarks.contains(landmark.name) {
                                     visitedLandmarks.append(landmark.name)
                                 }
@@ -30,32 +35,13 @@ struct MapView: View {
                     }
                 }
             }
-            .onAppear {
-                loadVisitedLandmarks()
-            }
-            .onChange(of: visitedLandmarks) { _, _ in
-                saveVisitedLandmarks()
-            }
-        }
-    }
-    
-    func saveVisitedLandmarks() {
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(visitedLandmarks) {
-            UserDefaults.standard.set(encoded, forKey: "visitedLandmarks")
-        }
-    }
-    
-    func loadVisitedLandmarks() {
-        if let savedData = UserDefaults.standard.data(forKey: "visitedLandmarks") {
-            let decoder = JSONDecoder()
-            if let loaded = try? decoder.decode([String].self, from: savedData) {
-                visitedLandmarks = loaded
-            }
         }
     }
 }
 
 #Preview {
-    MapView()
+    // The preview needs a constant binding and a location manager to work
+    MapView(visitedLandmarks: .constant([]))
+        .environmentObject(LocationManager())
 }
+
