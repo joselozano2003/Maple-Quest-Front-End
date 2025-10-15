@@ -32,5 +32,13 @@ let landmarks: [Landmark] = [
         imageName: "banff",
         location: CLLocationCoordinate2D(latitude: 51.497408, longitude: -115.926168),
         isVisited: false
+    ),
+    Landmark(
+        name: "University of Calgary",
+        province: "Alberta",
+        description: "The University of Calgary is a leading Canadian research university known for its innovative programs, vibrant campus life, and strong ties to industry. Located in Alberta’s largest city, it offers world-class education and opportunities in a dynamic, forward-thinking environment.",
+        imageName: "uCalgary",
+        location: CLLocationCoordinate2D(latitude: 51.07848848773985, longitude: -114.13352874347278),
+        isVisited: false
     )
 ]
