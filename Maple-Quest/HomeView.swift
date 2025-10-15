@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     let user: User
+    // This property receives the visited count from ContentView
+    let visitedCount: Int
     
     var body: some View {
         ScrollView {
@@ -30,7 +32,8 @@ struct HomeView: View {
                     Text("Welcome, \(user.firstName)!")
                         .font(.system(size: 22)).bold()
                         .padding(.top)
-                    Text("You have visited 0 of \(landmarks.count) Canadian landmarks!")
+                    // This now displays the correct visited count
+                    Text("You have visited \(visitedCount) of \(landmarks.count) Canadian landmarks!")
                         .font(.subheadline)
                     
                     // Mini map view of landmarks nearby
@@ -43,6 +46,32 @@ struct HomeView: View {
                     Text("Highlights")
                         .font(.system(size: 22)).bold()
                         .padding(.top)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 20) {
+                            ForEach(landmarks) { landmark in
+                                VStack(alignment: .leading) {
+                                    Image(landmark.imageName)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 250, height: 160)
+                                        .cornerRadius(15)
+                                        .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 5)
+                                    
+                                    Text(landmark.name)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    
+                                    Text(landmark.province)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom)
+                    }
+                    .padding(.horizontal, -20)
                 }
             }
             .padding()
@@ -52,5 +81,6 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(user: .sample)
+    HomeView(user: .sample, visitedCount: 0)
 }
+
