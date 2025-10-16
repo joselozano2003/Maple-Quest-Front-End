@@ -51,7 +51,7 @@ struct User: Identifiable, Codable {
         email: "john.smith@ucalgary.ca",
         location: "Calgary, AB, Canada",
         phoneCode: "+1",
-        phoneNumber: "(403) 758-0006",
+        phoneNumber: "(403) 758-0007",
         profileImageData: nil
     )
 }
