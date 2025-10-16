@@ -11,7 +11,7 @@ import SwiftUI
 struct ContentView: View {
     
     // Hardcoded user to make testing easier
-    let currentUser = User.sample
+    @State private var currentUser = User.sample
     // The list of visited landmarks is now managed here
     @State private var visitedLandmarks: [String] = []
     // The location manager is now created here and shared with other views
@@ -34,7 +34,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Achievements", systemImage: "medal.fill")
             }
-            ProfileView(user: currentUser)
+            ProfileView(user: $currentUser)
             .tabItem {
                 Label("Profile", systemImage: "person.fill")
             }

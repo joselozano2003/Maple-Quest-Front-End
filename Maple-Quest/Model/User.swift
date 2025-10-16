@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftUI
+import Contacts
 
 struct User: Identifiable, Codable {
     let id: UUID
@@ -17,15 +18,29 @@ struct User: Identifiable, Codable {
     var location: String
     var phoneCode: String
     var phoneNumber: String
-    var avatarSystemImage: String // e.g. "person.crop.circle.fill"
+    var profileImageData: Data? // e.g. "person.crop.circle.fill"
     
     // Computed properties for convenience
     var fullName: String {
         "\(firstName) \(lastName)"
     }
     
+//    var formattedPhone: String {
+//        "\(phoneCode) \(phoneNumber)"
+//    }
     var formattedPhone: String {
-        "\(phoneCode) \(phoneNumber)"
+        let digits = phoneNumber.filter(\.isNumber)
+        
+        // Basic North American formatting (XXX) XXX-XXXX
+        if digits.count == 10 {
+            let area = digits.prefix(3)
+            let mid = digits.dropFirst(3).prefix(3)
+            let end = digits.suffix(4)
+            return "\(phoneCode) (\(area)) \(mid)-\(end)"
+        } else {
+            // fallback: just return the digits
+            return "\(phoneCode) \(phoneNumber)"
+        }
     }
     
     // Example static mock for previews or testing
@@ -37,6 +52,6 @@ struct User: Identifiable, Codable {
         location: "Calgary, AB, Canada",
         phoneCode: "+1",
         phoneNumber: "(403) 758-0006",
-        avatarSystemImage: "person.crop.circle.fill"
+        profileImageData: nil
     )
 }
