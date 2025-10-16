@@ -79,13 +79,19 @@ struct LocationDetailView: View {
     private var mainContent: some View {
         ScrollView {
             VStack {
-                // Image Section
-                Image(landmark.imageName)
-                    .resizable()
-                    .scaledToFit() // Changed from .scaledToFill to .scaledToFit
-                    .frame(height: 400)
-                    .clipped()
-                    .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
+                GeometryReader { geometry in
+                    // Image Section
+                    Image(landmark.imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 500)
+                        .frame(maxWidth: geometry.size.width)
+                        .clipped()
+                        .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
+                    
+                }
+                .frame(height: 500)
+                .padding(.bottom, 20) // Padding between the image and info sections
             }
             
             // Info Section
@@ -119,8 +125,11 @@ struct LocationDetailView: View {
 
                 Divider()
                 
+                // Description
                 Text(landmark.description)
-                    .font(.body)
+                    .font(.system(size: 17))
+                    .foregroundColor(.gray)
+                    .padding(.top, 5)
             }
             .padding()
         }
