@@ -12,10 +12,8 @@ import CoreLocation
 struct LocationDetailView: View {
     
     var landmark: Landmark
-    // Receive the user's location from the MapView
     let userLocation: CLLocationCoordinate2D?
     var onVisited: (Bool) -> Void
-    
     @State private var galleryImages: [UIImage] = []
     @State private var selectedCameraOption: String?
     @State private var photosPickerItem: PhotosPickerItem?
@@ -39,15 +37,16 @@ struct LocationDetailView: View {
         return distance <= 500 // 500 meters is the required proximity
     }
     
-    // Main body of the view, simplified to improve compile times
+    // Main body of the view
     var body: some View {
-        mainContent
+        locationDetailContent
             .ignoresSafeArea(edges: .top)
             .toolbar {
                 toolbarContent
             }
             .fullScreenCover(isPresented: $showCamera) {
                 CameraView(image: $selectedImage)
+                    .ignoresSafeArea(edges: .all)
             }
             .onChange(of: selectedImage) { _, newItem in
                 if let newItem {
@@ -64,7 +63,7 @@ struct LocationDetailView: View {
                 }
             }
             .navigationDestination(isPresented: $showPhotoGallery) {
-                // This now correctly calls the updated PhotoGallery with the onDelete closure
+                // Calls the updated PhotoGallery with the onDelete closure
                 PhotoGallery(images: $galleryImages) { imageToDelete in
                     deleteImage(imageToDelete)
                 }
@@ -75,8 +74,8 @@ struct LocationDetailView: View {
             }
     }
     
-    // Extracted view for the main scrollable content
-    private var mainContent: some View {
+    // Landmark Detail Content
+    private var locationDetailContent: some View {
         ScrollView {
             VStack {
                 GeometryReader { geometry in
@@ -88,24 +87,23 @@ struct LocationDetailView: View {
                         .frame(maxWidth: geometry.size.width)
                         .clipped()
                         .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
-                    
                 }
                 .frame(height: 500)
                 .padding(.bottom, 20) // Padding between the image and info sections
             }
-            
             // Info Section
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading) {
+                // Title
                 Text(landmark.name)
                     .font(.largeTitle).bold()
-                
+                    .padding(.bottom, 2)
+                // Location
                 Text("\(landmark.province), \(landmark.country)")
                     .font(.title3)
-                    .foregroundColor(.secondary)
-                
+                    .foregroundColor(.gray)
+                    .padding(.bottom, 5)
                 Divider()
-                
-                // Proximity Check Section
+                // Proximity Check
                 if let distance = distanceFromLandmark {
                     HStack {
                         Image(systemName: isUserNearby ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -122,9 +120,7 @@ struct LocationDetailView: View {
                             .foregroundColor(.secondary)
                     }
                 }
-
                 Divider()
-                
                 // Description
                 Text(landmark.description)
                     .font(.system(size: 17))
@@ -135,7 +131,7 @@ struct LocationDetailView: View {
         }
     }
     
-    // Extracted builder for the toolbar content
+    // Toolbar Content
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
@@ -155,7 +151,7 @@ struct LocationDetailView: View {
             } label: {
                 Image(systemName: "plus.circle.fill")
             }
-            .disabled(!isUserNearby)
+            .disabled(!isUserNearby) // This feature is disabled if the user is not nearby
         }
         ToolbarItem(placement: .topBarTrailing) {
             Button {
