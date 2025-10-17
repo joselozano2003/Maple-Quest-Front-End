@@ -167,7 +167,7 @@ struct EditProfileView: View {
                         }
                     }
                     .padding(.top, 16)
-                    .onChange(of: photoItem) { newItem in
+                    .onChange(of: photoItem) { _, newItem in
                         Task {
                             if let data = try? await newItem?.loadTransferable(type: Data.self),
                                let uiImage = UIImage(data: data) {
