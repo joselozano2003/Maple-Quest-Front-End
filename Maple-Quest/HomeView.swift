@@ -11,6 +11,10 @@ struct HomeView: View {
     let user: User
     // This property receives the visited count from ContentView
     let visitedCount: Int
+    // Add binding to update landmarks
+    @Binding var visitedLandmarks: [String]
+    // Get location manager from environment
+    @EnvironmentObject var locationManager: LocationManager
     
     var body: some View {
         ScrollView {
@@ -50,21 +54,36 @@ struct HomeView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 20) {
                             ForEach(landmarks) { landmark in
-                                VStack(alignment: .leading) {
-                                    Image(landmark.imageName)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 250, height: 160)
-                                        .cornerRadius(15)
-                                        .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 5)
-                                    
-                                    Text(landmark.name)
-                                        .font(.headline)
-                                        .foregroundColor(.primary)
-                                    
-                                    Text(landmark.province)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                // Wrap the card in a NavigationLink
+                                NavigationLink {
+                                    // Destination is the LocationDetailView
+                                    LocationDetailView(
+                                        landmark: landmark,
+                                        userLocation: locationManager.userLocation,
+                                        onVisited: { visited in
+                                            if visited && !visitedLandmarks.contains(landmark.name) {
+                                                visitedLandmarks.append(landmark.name)
+                                            }
+                                        }
+                                    )
+                                } label: {
+                                    // This is your original card content
+                                    VStack(alignment: .leading) {
+                                        Image(landmark.imageName)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 250, height: 160)
+                                            .cornerRadius(15)
+                                            .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 5)
+                                        
+                                        Text(landmark.name)
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                        
+                                        Text(landmark.province)
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
                         }
@@ -81,6 +100,11 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(user: .sample, visitedCount: 0)
+    // Update the preview to provide the new binding and environment object
+    HomeView(
+        user: .sample,
+        visitedCount: 0,
+        visitedLandmarks: .constant([])
+    )
+    .environmentObject(LocationManager())
 }
-
