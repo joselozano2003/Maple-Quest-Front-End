@@ -16,6 +16,13 @@ struct HomeView: View {
     // Get location manager from environment
     @EnvironmentObject var locationManager: LocationManager
     
+    // Calculate progress for the progress bar
+    private var progress: Double {
+        // Ensure landmarks.count is not zero to avoid division by zero
+        guard !landmarks.isEmpty else { return 0.0 }
+        return Double(visitedCount) / Double(landmarks.count)
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -26,30 +33,62 @@ struct HomeView: View {
                     HStack {
                         Text("Beautiful").bold()
                         Text("Canada!").bold().foregroundColor(.red)
+                        
+                        // Add a thematic maple leaf icon
+                        Image("maple-leaf-icon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30, height: 30)
+                            .padding(.leading, 4)
                     }
                 }
                 .font(.largeTitle)
                 .padding(.top, 50)
                 
                 VStack(alignment: .leading) {
-                    // Mini summary section
-                    Text("Welcome, \(user.firstName)!")
-                        .font(.system(size: 22)).bold()
-                        .padding(.top)
-                    // This now displays the correct visited count
-                    Text("You have visited \(visitedCount) of \(landmarks.count) Canadian landmarks!")
-                        .font(.subheadline)
                     
-                    // Mini map view of landmarks nearby
-                    Text("Explore Landmarks Near You")
-                        .font(.system(size: 22)).bold()
-                        .padding(.top)
+    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Welcome, \(user.firstName)!")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        // Custom Progress Bar
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Your Progress: \(visitedCount) of \(landmarks.count) landmarks visited")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            ProgressView(value: progress)
+                                .progressViewStyle(LinearProgressViewStyle(tint: .red))
+                                .animation(.spring(), value: visitedCount)
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading) // Make it full width
+                    .background(Color(.systemGray6))
+                    .cornerRadius(15)
+                    .padding(.top)
+                    
+                    HStack(spacing: 8) {
+                        Image(systemName: "mappin.and.ellipse")
+                            .font(.title3)
+                            .foregroundColor(.red)
+                        Text("Explore Landmarks Near You")
+                            .font(.system(size: 22)).bold()
+                    }
+                    .padding(.top)
+                    
                     MapPreview()
-                    
-                    // Top landmarks in Canada
-                    Text("Highlights")
-                        .font(.system(size: 22)).bold()
-                        .padding(.top)
+
+                    HStack(spacing: 8) {
+                        Image(systemName: "star.fill")
+                            .font(.title3)
+                            .foregroundColor(.yellow)
+                        Text("Highlights")
+                            .font(.system(size: 22)).bold()
+                    }
+                    .padding(.top)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 20) {
@@ -67,7 +106,6 @@ struct HomeView: View {
                                         }
                                     )
                                 } label: {
-                                    // This is your original card content
                                     VStack(alignment: .leading) {
                                         Image(landmark.imageName)
                                             .resizable()
@@ -100,11 +138,10 @@ struct HomeView: View {
 }
 
 #Preview {
-    // Update the preview to provide the new binding and environment object
     HomeView(
         user: .sample,
-        visitedCount: 0,
-        visitedLandmarks: .constant([])
+        visitedCount: 1,
+        visitedLandmarks: .constant(["Niagara Falls"])
     )
     .environmentObject(LocationManager())
 }
