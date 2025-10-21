@@ -27,10 +27,11 @@ struct MapView: View {
                                 }
                             }
                         } label: {
-                            Image(systemName: "mappin.circle.fill")
-                                .font(.title)
-                                .foregroundColor(visitedLandmarks.contains(landmark.name) ? .orange : .red)
-                                .shadow(color: .white, radius: 2, x: 0, y: 0)
+                            Image(visitedLandmarks.contains(landmark.name) ? "map-pin-visited" : "map-pin-unvisited")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40) // Adjust the size as needed
+                                .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
                         }
                     }
                 }
