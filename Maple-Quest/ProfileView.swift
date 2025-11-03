@@ -52,20 +52,41 @@ struct ProfileView: View {
                             .font(.subheadline)
                     }
                     
-                    // Edit Profile Row
-                    Button(action: { isEditing = true }) {
-                        HStack {
-                            Text("Edit Profile")
-                                .fontWeight(.medium)
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
+                    // --- UPDATED SECTION ---
+                    VStack(spacing: 12) {
+                        // Edit Profile Row
+                        Button(action: { isEditing = true }) {
+                            HStack {
+                                Label("Edit Profile", systemImage: "pencil")
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
                         }
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                        
+                        // NEW: Friends Row
+                        NavigationLink {
+                            // This goes to the new view
+                            FriendsView()
+                        } label: {
+                            HStack {
+                                Label("Friends", systemImage: "person.2.fill")
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                        }
                     }
                     .padding(.horizontal)
+                    // --- END UPDATED SECTION ---
                     
                     VStack(alignment: .leading, spacing: 16) {
                         ProfileField(title: "First Name", value: $user.firstName)
@@ -248,5 +269,8 @@ struct EditableField: View {
 }
 
 #Preview {
-    ProfileView(user: .constant(User.sample))
+    // Wrap in NavigationStack to preview the new link
+    NavigationStack {
+        ProfileView(user: .constant(User.sample))
+    }
 }
