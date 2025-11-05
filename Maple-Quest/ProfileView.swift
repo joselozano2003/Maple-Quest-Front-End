@@ -13,6 +13,7 @@ let phoneCodes = ["+1", "+44", "+49", "+61", "+81", "+91"]
 struct ProfileView: View {
     @State private var isEditing = false
     @Binding var user: User
+    @EnvironmentObject var authService: AuthService
     
     var body: some View {
         NavigationStack {
@@ -52,7 +53,7 @@ struct ProfileView: View {
                             .font(.subheadline)
                     }
                     
-                    // --- UPDATED SECTION ---
+                    // Profile Actions
                     VStack(spacing: 12) {
                         // Edit Profile Row
                         Button(action: { isEditing = true }) {
@@ -68,9 +69,8 @@ struct ProfileView: View {
                             .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
                         }
                         
-                        // NEW: Friends Row
+                        // Friends Row
                         NavigationLink {
-                            // This goes to the new view
                             FriendsView()
                         } label: {
                             HStack {
@@ -84,9 +84,22 @@ struct ProfileView: View {
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
                         }
+                        
+                        // Logout Button
+                        Button(action: {
+                            authService.logout()
+                        }) {
+                            HStack {
+                                Label("Sign Out", systemImage: "arrow.right.square")
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.red)
+                                Spacer()
+                            }
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                        }
                     }
                     .padding(.horizontal)
-                    // --- END UPDATED SECTION ---
                     
                     VStack(alignment: .leading, spacing: 16) {
                         ProfileField(title: "First Name", value: $user.firstName)
