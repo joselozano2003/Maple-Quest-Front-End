@@ -9,9 +9,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var authService: AuthService
     
-    // Hardcoded user to make testing easier
-    @State private var currentUser = User.sample
     // The list of visited landmarks is now managed here
     @State private var visitedLandmarks: [String] = []
     // The location manager is now created here and shared with other views
@@ -19,33 +18,35 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            // Wrap HomeView in a NavigationStack to allow navigation
-            NavigationStack {
-                HomeView(
-                    user: currentUser,
-                    visitedCount: visitedLandmarks.count,
-                    visitedLandmarks: $visitedLandmarks // Pass the binding
-                )
-            }
-            .tabItem {
-                Label("Home", systemImage: "house.fill")
-            }
-            
-            // Pass a binding to the visited landmarks array to the MapView
-            MapView(visitedLandmarks: $visitedLandmarks)
-            .tabItem {
-                Label("Map", systemImage: "map.fill")
-            }
-            
-            // Pass a binding to the AchievementsView so it can check progress
-            AchievementsView(visitedLandmarks: $visitedLandmarks)
-            .tabItem {
-                Label("Achievements", systemImage: "medal.fill")
-            }
-            
-            ProfileView(user: $currentUser)
-            .tabItem {
-                Label("Profile", systemImage: "person.fill")
+            if let currentUser = authService.currentUser {
+                // Wrap HomeView in a NavigationStack to allow navigation
+                NavigationStack {
+                    HomeView(
+                        user: currentUser,
+                        visitedCount: visitedLandmarks.count,
+                        visitedLandmarks: $visitedLandmarks // Pass the binding
+                    )
+                }
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
+                
+                // Pass a binding to the visited landmarks array to the MapView
+                MapView(visitedLandmarks: $visitedLandmarks)
+                .tabItem {
+                    Label("Map", systemImage: "map.fill")
+                }
+                
+                // Pass a binding to the AchievementsView so it can check progress
+                AchievementsView(visitedLandmarks: $visitedLandmarks)
+                .tabItem {
+                    Label("Achievements", systemImage: "medal.fill")
+                }
+                
+                ProfileView(user: .constant(currentUser))
+                .tabItem {
+                    Label("Profile", systemImage: "person.fill")
+                }
             }
         }
         .tint(.red)

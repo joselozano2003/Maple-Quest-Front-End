@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct LoginView: View {
+    @StateObject private var authService = AuthService.shared
     @State private var username = ""
     @State private var password = ""
-    @State private var showError = false
-    @State private var isLoggedIn = false
     @State private var showSignup = false
     @State private var showPassword = false
     
     var body: some View {
-        if isLoggedIn {
+        if authService.isAuthenticated {
             ContentView()
+                .environmentObject(authService)
         } else if showSignup {
-            SignupView(showSignup: $showSignup, isLoggedIn: $isLoggedIn)
+            SignupView(showSignup: $showSignup)
         } else {
             VStack {
                 Spacer()
@@ -34,8 +34,11 @@ struct LoginView: View {
                         .font(.title2)
                         .padding(.top, 10)
 
-                    TextField("Username", text: $username)
+                    TextField("Email", text: $username)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
                         .padding(.horizontal)
 
                     ZStack(alignment: .trailing) {
@@ -58,31 +61,36 @@ struct LoginView: View {
                         .hoverEffect(.highlight)
                     }
 
-                    if showError {
-                        Text("Invalid credentials. Please try again.")
+                    if let errorMessage = authService.errorMessage {
+                        Text(errorMessage)
                             .foregroundColor(.red)
                             .font(.caption)
                     }
 
                     Button("Login") {
-                        showError = false
-                        
-                        if username == "Admin" && password == "password" {
-                            showError = false
-                            isLoggedIn = true
-                        } else {
-                            showError = true
+                        Task {
+                            await authService.login(email: username, password: password)
                         }
                     }
                     .foregroundColor(.white)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.red)
+                    .background(authService.isLoading ? Color.gray : Color.red)
                     .cornerRadius(8)
                     .padding(.horizontal)
+                    .disabled(authService.isLoading || username.isEmpty || password.isEmpty)
+                    .overlay(
+                        Group {
+                            if authService.isLoading {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            }
+                        }
+                    )
                     
                     HStack(spacing: 4) {
-                        Text("Don’t have an account?")
+                        Text("Don't have an account?")
                             .foregroundColor(.gray)
                         Button(action: { showSignup = true }) {
                             Text("Sign up")
@@ -102,7 +110,7 @@ struct LoginView: View {
 
 struct SignupView: View {
     @Binding var showSignup: Bool
-    @Binding var isLoggedIn: Bool
+    @StateObject private var authService = AuthService.shared
     
     @State private var firstName = ""
     @State private var lastName = ""
@@ -159,7 +167,9 @@ struct SignupView: View {
                     }
                     
                     TextField("Email Address", text: $email)
-                        .textInputAutocapitalization(.never)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
                     TextField("Location", text: $location)
                     ZStack(alignment: .trailing) {
                         Group {
@@ -181,15 +191,37 @@ struct SignupView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding(.horizontal)
                 
+                if let errorMessage = authService.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                }
+                
                 Button("Create Account") {
-                    isLoggedIn = true
+                    Task {
+                        await authService.register(
+                            email: email,
+                            password: password,
+                            phoneNumber: phoneNumber.isEmpty ? nil : phoneNumber
+                        )
+                    }
                 }
                 .foregroundColor(.white)
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(Color.red)
+                .background(authService.isLoading ? Color.gray : Color.red)
                 .cornerRadius(8)
                 .padding(.horizontal)
+                .disabled(authService.isLoading || email.isEmpty || password.isEmpty)
+                .overlay(
+                    Group {
+                        if authService.isLoading {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        }
+                    }
+                )
                 
                 HStack(spacing: 4) {
                     Text("Already have an account?")
@@ -205,6 +237,11 @@ struct SignupView: View {
             }
             
             Spacer()
+        }
+        .onChange(of: authService.isAuthenticated) { _, isAuthenticated in
+            if isAuthenticated {
+                showSignup = false
+            }
         }
     }
 }
