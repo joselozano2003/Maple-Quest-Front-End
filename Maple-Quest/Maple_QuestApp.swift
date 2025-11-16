@@ -9,9 +9,21 @@ import SwiftUI
 
 @main
 struct Maple_QuestApp: App {
+    @StateObject private var authService = AuthService.shared
+    
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            Group {
+                if !authService.isInitialized {
+                    SplashView()
+                } else if authService.isAuthenticated {
+                    ContentView()
+                        .environmentObject(authService)
+                } else {
+                    LoginView()
+                        .environmentObject(authService)
+                }
+            }
         }
     }
 }
