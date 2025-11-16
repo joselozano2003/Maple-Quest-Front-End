@@ -76,58 +76,80 @@ struct LocationDetailView: View {
     
     // Landmark Detail Content
     private var locationDetailContent: some View {
-        ScrollView {
-            VStack {
-                GeometryReader { geometry in
-                    // Image Section
-                    Image(landmark.imageName)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 500)
-                        .frame(maxWidth: geometry.size.width)
-                        .clipped()
-                        .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
-                }
-                .frame(height: 500)
-                .padding(.bottom, 20) // Padding between the image and info sections
-            }
-            // Info Section
-            VStack(alignment: .leading) {
-                // Title
-                Text(landmark.name)
-                    .font(.largeTitle).bold()
-                    .padding(.bottom, 2)
-                // Location
-                Text("\(landmark.province), \(landmark.country)")
-                    .font(.title3)
-                    .foregroundColor(.gray)
-                    .padding(.bottom, 5)
-                Divider()
-                // Proximity Check
-                if let distance = distanceFromLandmark {
-                    HStack {
-                        Image(systemName: isUserNearby ? "checkmark.circle.fill" : "xmark.circle.fill")
-                            .foregroundColor(isUserNearby ? .green : .red)
-                        Text(isUserNearby ? "You are here! You can add photos." : "You are \(String(format: "%.2f", distance / 1000)) km away. Get closer to add photos.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+        ZStack {
+            Color(hex: "EAF6FF")
+                .ignoresSafeArea()
+            ScrollView {
+                VStack {
+                    ZStack {
+                        GeometryReader { geometry in
+                            // Image Section
+                            Image("polaroid")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 450)
+                                .frame(maxWidth: geometry.size.width)
+                                .clipped()
+                                .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 10)
+                            
+                            Image(landmark.imageName)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 308, height: 312)
+                                .clipped()
+                                .offset(x: 48, y: 35)
+                            
+                            VStack {
+                                // Title
+                                Text(landmark.name)
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(Color.black.opacity(0.8))
+                                    .padding(.top, 65)
+                                    .offset(y: 300)
+                                
+                                // Location
+                                Text("\(landmark.province), \(landmark.country)")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.gray)
+                                    .offset(y: 305)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        }
                     }
-                } else {
-                    HStack {
-                        Image(systemName: "location.slash.fill")
-                        Text("Searching for your location...")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                    .frame(height: 450)
+                    .padding(.top, 120) // Padding between the top bar and the polaroid
+                }
+                // Info Section
+                VStack(alignment: .leading) {
+                    Text("Details")
+                        .font(.title2).bold()
+                    // Description
+                    Text(landmark.description)
+                        .font(.system(size: 17))
+                        .foregroundColor(.black.opacity(0.6))
+                        .padding(.top, 5)
+                    Divider()
+                    // Proximity Check
+                    if let distance = distanceFromLandmark {
+                        HStack {
+                            Image(systemName: isUserNearby ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                .foregroundColor(isUserNearby ? .green : .red)
+                            Text(isUserNearby ? "You are here! You can add photos." : "You are \(String(format: "%.2f", distance / 1000)) km away. Get closer to add photos.")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        HStack {
+                            Image(systemName: "location.slash.fill")
+                            Text("Searching for your location...")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
-                Divider()
-                // Description
-                Text(landmark.description)
-                    .font(.system(size: 17))
-                    .foregroundColor(.gray)
-                    .padding(.top, 5)
+                .padding()
             }
-            .padding()
         }
     }
     
