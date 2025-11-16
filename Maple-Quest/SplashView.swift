@@ -19,7 +19,7 @@ struct SplashView: View {
                     Text("Quest")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .foregroundColor(Color(hex: "CF0303"))
+                        .foregroundColor(.red)
                         .offset(x: 25)
                 }
                 .padding(.bottom, -150)
