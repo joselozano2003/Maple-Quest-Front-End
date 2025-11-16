@@ -9,17 +9,29 @@ import SwiftUI
 
 struct SplashView: View {
     var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "map.fill")
-                .font(.system(size: 80))
-                .foregroundColor(.red)
-            
-            Text("Maple Quest")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
-            ProgressView()
-                .scaleEffect(1.2)
+        ZStack {
+            VStack(spacing: 20) {
+                VStack{
+                    Text("Maple")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .offset(x: -40)
+                    Text("Quest")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color(hex: "CF0303"))
+                        .offset(x: 25)
+                }
+                .padding(.bottom, -150)
+                Image("splashIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .offset(x: 10, y: -90)
+                
+                ProgressView()
+                    .scaleEffect(1.2)
+                    .padding(.top, -60)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
