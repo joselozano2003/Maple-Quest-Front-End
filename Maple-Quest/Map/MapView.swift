@@ -14,6 +14,12 @@ struct MapView: View {
     // Get the location manager from the environment
     @EnvironmentObject var locationManager: LocationManager
     
+    // Maps centers on Canada
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 56.1304, longitude: -106.3468),
+        span: MKCoordinateSpan(latitudeDelta: 20, longitudeDelta: 20)
+    )
+    
     var body: some View {
         NavigationStack {
             Map {
