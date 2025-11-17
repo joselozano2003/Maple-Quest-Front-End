@@ -24,116 +24,126 @@ struct HomeView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                
-                // Title Section
+        ZStack {
+            Color(hex: "EAF6FF")
+                .ignoresSafeArea()
+            ScrollView {
                 VStack(alignment: .leading) {
-                    Text("Explore")
-                    HStack {
-                        Text("Beautiful").bold()
-                        Text("Canada!").bold().foregroundColor(.red)
-                        
-                        // Add a thematic maple leaf icon
-                        Image("maple-leaf-icon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 30, height: 30)
-                            .padding(.leading, 4)
-                    }
-                }
-                .font(.largeTitle)
-                .padding(.top, 50)
-                
-                VStack(alignment: .leading) {
-                    
-    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Welcome, \(user.firstName)!")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        // Custom Progress Bar
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Your Progress: \(visitedCount) of \(landmarks.count) landmarks visited")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            ProgressView(value: progress)
-                                .progressViewStyle(LinearProgressViewStyle(tint: .red))
-                                .animation(.spring(), value: visitedCount)
+                    // Title Section
+                    Image("cloud")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                    VStack(alignment: .leading) {
+                        ZStack {
+                            Text("Explore")
+                            Image("cloud")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 35)
+                                .offset(x: 250, y: -10)
                         }
+                        HStack {
+                            Text("Beautiful").bold()
+                            Text("Canada!").bold().foregroundColor(.red)
+                            // Add a thematic maple leaf icon
+                            Image("maple-leaf-icon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 30, height: 30)
+                                .padding(.leading, 4)
+                        }
+                        .padding(.top, -10)
                     }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading) // Make it full width
-                    .background(Color(.systemGray6))
-                    .cornerRadius(15)
-                    .padding(.top)
+                    .font(.largeTitle)
+                    .padding(.top, -20)
                     
-                    HStack(spacing: 8) {
-                        Image(systemName: "mappin.and.ellipse")
-                            .font(.title3)
-                            .foregroundColor(.red)
-                        Text("Explore Landmarks Near You")
-                            .font(.system(size: 22)).bold()
-                    }
-                    .padding(.top)
-                    
-                    MapPreview()
-
-                    HStack(spacing: 8) {
-                        Image(systemName: "star.fill")
-                            .font(.title3)
-                            .foregroundColor(.yellow)
-                        Text("Highlights")
-                            .font(.system(size: 22)).bold()
-                    }
-                    .padding(.top)
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            ForEach(landmarks) { landmark in
-                                // Wrap the card in a NavigationLink
-                                NavigationLink {
-                                    // Destination is the LocationDetailView
-                                    LocationDetailView(
-                                        landmark: landmark,
-                                        userLocation: locationManager.userLocation,
-                                        onVisited: { visited in
-                                            if visited && !visitedLandmarks.contains(landmark.name) {
-                                                visitedLandmarks.append(landmark.name)
+                    VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Welcome, \(user.firstName)!")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            
+                            // Custom Progress Bar
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Your Progress: \(visitedCount) of \(landmarks.count) landmarks visited")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                
+                                ProgressView(value: progress)
+                                    .progressViewStyle(LinearProgressViewStyle(tint: .red))
+                                    .animation(.spring(), value: visitedCount)
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading) // Make it full width
+                        .cornerRadius(15)
+                        .padding(.horizontal, -15)
+                        
+                        HStack(spacing: 8) {
+                            Image(systemName: "mappin.and.ellipse")
+                                .font(.title3)
+                                .foregroundColor(.red)
+                            Text("Explore Landmarks Near You")
+                                .font(.system(size: 22)).bold()
+                        }
+                        .padding(.top)
+                        
+                        MapPreview()
+                        
+                        HStack(spacing: 8) {
+                            Image(systemName: "star.fill")
+                                .font(.title3)
+                                .foregroundColor(.yellow)
+                            Text("Highlights")
+                                .font(.system(size: 22)).bold()
+                        }
+                        .padding(.top)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 20) {
+                                ForEach(landmarks) { landmark in
+                                    // Wrap the card in a NavigationLink
+                                    NavigationLink {
+                                        // Destination is the LocationDetailView
+                                        LocationDetailView(
+                                            landmark: landmark,
+                                            userLocation: locationManager.userLocation,
+                                            onVisited: { visited in
+                                                if visited && !visitedLandmarks.contains(landmark.name) {
+                                                    visitedLandmarks.append(landmark.name)
+                                                }
                                             }
+                                        )
+                                    } label: {
+                                        VStack(alignment: .leading) {
+                                            Image(landmark.imageName)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 250, height: 160)
+                                                .cornerRadius(15)
+                                                .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 5)
+                                            
+                                            Text(landmark.name)
+                                                .font(.headline)
+                                                .foregroundColor(.primary)
+                                            
+                                            Text(landmark.province)
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
                                         }
-                                    )
-                                } label: {
-                                    VStack(alignment: .leading) {
-                                        Image(landmark.imageName)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 250, height: 160)
-                                            .cornerRadius(15)
-                                            .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 5)
-                                        
-                                        Text(landmark.name)
-                                            .font(.headline)
-                                            .foregroundColor(.primary)
-                                        
-                                        Text(landmark.province)
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
                                     }
                                 }
                             }
+                            .padding(.horizontal)
+                            .padding(.bottom)
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom)
+                        .padding(.horizontal, -20)
                     }
-                    .padding(.horizontal, -20)
                 }
-            }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            }}
     }
 }
 

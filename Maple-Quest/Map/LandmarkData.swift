@@ -40,5 +40,45 @@ let landmarks: [Landmark] = [
         imageName: "uCalgary",
         location: CLLocationCoordinate2D(latitude: 51.07848848773985, longitude: -114.13352874347278),
         isVisited: false
+    ),
+    Landmark(
+        name: "CN Tower",
+        province: "Ontario",
+        description: "One of the tallest freestanding structures in the world, offering panoramic city and lake views. It’s famous for its glass floor and EdgeWalk experience.",
+        imageName: "cnTower",
+        location: CLLocationCoordinate2D(latitude: 43.64272921522629, longitude: -79.38712117632794),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Parliament Hill",
+        province: "Ontario",
+        description: "The heart of Canada’s federal government. Its Gothic Revival architecture, daily ceremonies, and riverfront location make it an iconic national symbol.",
+        imageName: "parliamentHill",
+        location: CLLocationCoordinate2D(latitude: 45.42375180363914, longitude: -75.70093973205235),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Capilano Suspension Bridge",
+        province: "British Columbia",
+        description: "A 137-metre-long swaying bridge over a forested canyon in North Vancouver. The park features treetop walkways, cliffside paths, and Indigenous cultural exhibits.",
+        imageName: "capSuspensionBridge",
+        location: CLLocationCoordinate2D(latitude: 49.343021644932385, longitude: -123.1149244029921),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Château Frontenac",
+        province: "Québec",
+        description: "Historic grand hotel overlooking Old Québec, known for its castle-like architecture and river views.",
+        imageName: "chateauFrontenac",
+        location: CLLocationCoordinate2D(latitude: 46.81231686579934, longitude: -71.20521303872079),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Peggy’s Cove Lighthouse",
+        province: "Nova Scotia",
+        description: "Classic red lighthouse perched on rocky shores, surrounded by waves and picturesque fishing village scenery.",
+        imageName: "peggysLightHouse",
+        location: CLLocationCoordinate2D(latitude: 44.491936206399686, longitude: -63.91859253025372,),
+        isVisited: false
     )
 ]
