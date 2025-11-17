@@ -23,6 +23,10 @@ struct LocationDetailView: View {
     @State private var showCamera: Bool = false
     @Environment(\.dismiss) private var dismiss
     
+    private var visitedLandmark: Bool {
+        !galleryImages.isEmpty
+    }
+    
     // Calculate the distance from the landmark in meters
     private var distanceFromLandmark: CLLocationDistance? {
         guard let userLocation = userLocation else { return nil }
@@ -122,6 +126,23 @@ struct LocationDetailView: View {
                 }
                 // Info Section
                 VStack(alignment: .leading) {
+                    if visitedLandmark {
+                        Text("You have visited this landmark before!")
+                            .font(.subheadline)
+                            .foregroundColor(.black.opacity(0.6))
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        Text("You have not visited this landmark before!")
+                            .font(.subheadline)
+                            .foregroundColor(.black.opacity(0.6))
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, -20)
+                    }
+                    
+                    Divider()
+                        .padding(5)
                     Text("Details")
                         .font(.title2).bold()
                     // Description
@@ -211,7 +232,9 @@ struct LocationDetailView: View {
 }
 
 #Preview {
-    ContentView()
+    // The preview needs a constant binding and a location manager to work
+    MapView(visitedLandmarks: .constant([]))
+        .environmentObject(LocationManager())
 }
 
 
