@@ -10,9 +10,22 @@
 		421F01BA2E94498E00C5D852 /* Maple-Quest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Maple-Quest.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2FD5891F2ECBE27F0050989D /* Exceptions for "Maple-Quest" folder in "Maple-Quest" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 421F01B92E94498E00C5D852 /* Maple-Quest */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		421F01BC2E94498E00C5D852 /* Maple-Quest */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2FD5891F2ECBE27F0050989D /* Exceptions for "Maple-Quest" folder in "Maple-Quest" target */,
+			);
 			path = "Maple-Quest";
 			sourceTree = "<group>";
 		};
@@ -253,7 +266,9 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Maple-Quest/Info.plist";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to show nearby landmarks on the map.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to view your photos and save new ones.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -285,7 +300,9 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Maple-Quest/Info.plist";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to show nearby landmarks on the map.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to view your photos and save new ones.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
