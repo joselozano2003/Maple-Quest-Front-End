@@ -12,6 +12,7 @@ struct PhotoGallery: View {
     @Binding var images: [UIImage]
     // This closure will be called when the user taps the delete button on an image
     var onDelete: (UIImage) -> Void
+    @State private var selectedImage: UIImage? = nil
     
     var body: some View {
         ScrollView {
@@ -24,6 +25,9 @@ struct PhotoGallery: View {
                             .frame(width: 100, height: 100)
                             .cornerRadius(10)
                             .clipped()
+                            .onTapGesture {
+                                selectedImage = image
+                            }
 
                         // Add a delete button to each image
                         Button(action: {
