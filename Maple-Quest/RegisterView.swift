@@ -11,6 +11,8 @@ struct RegisterView: View {
     @StateObject private var authService = AuthService.shared
     @Environment(\.dismiss) private var dismiss
     
+    @State private var firstName = ""
+    @State private var lastName = ""
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
@@ -40,6 +42,16 @@ struct RegisterView: View {
                 
                 // Registration Form
                 VStack(spacing: 16) {
+                    TextField("First Name (Optional)", text: $firstName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .autocapitalization(.words)
+                        .padding(.horizontal)
+                    
+                    TextField("Last Name (Optional)", text: $lastName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .autocapitalization(.words)
+                        .padding(.horizontal)
+                    
                     TextField("Email", text: $email)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.emailAddress)
@@ -113,6 +125,8 @@ struct RegisterView: View {
                             await authService.register(
                                 email: email,
                                 password: password,
+                                firstName: firstName.isEmpty ? nil : firstName,
+                                lastName: lastName.isEmpty ? nil : lastName,
                                 phoneNumber: phoneNumber.isEmpty ? nil : phoneNumber
                             )
                         }
