@@ -1,152 +1,151 @@
-//
-//  FriendsView.swift
-//  Maple-Quest
-//
-//  Created by Matias on 10/20/25
-//
-
 import SwiftUI
 
 struct FriendsView: View {
-    
-    // --- State for Search ---
-    @State private var searchText = ""
-    
-    // --- State for Mock Data ---
-    // In a real app, these would be loaded from your server.
-    @State private var requests = mockRequests
-    @State private var friends = mockCurrentFriends
-    @State private var allUsers = mockAllUsers
-    
-    // Filter for search results
-    var searchResults: [SocialUser] {
-        if searchText.isEmpty {
-            return [] // Don't show anyone if search is empty
-        }
-        // Filter all users who are not already friends or have a pending request
-        return allUsers.filter { user in
-            user.name.localizedCaseInsensitiveContains(searchText) &&
-            !friends.contains(user) &&
-            !requests.contains(user)
-        }
-    }
-    
+    @State private var friends: [Friend] = []
+    @State private var pendingRequests: [FriendRequest] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var showAddFriend = false
+
     var body: some View {
         List {
-            // --- SECTION 1: FRIEND REQUESTS ---
-            Section(header: Text("Friend Requests")) {
-                if requests.isEmpty {
-                    Text("No pending requests")
-                        .foregroundColor(.gray)
-                }
-                ForEach(requests) { user in
-                    HStack {
-                        Image(systemName: user.profileIcon)
-                            .font(.title2)
-                            .frame(width: 30)
-                        
-                        Text(user.name)
-                            .font(.headline)
-                        
-                        Spacer()
-                        
-                        // Accept Button
-                        Button(action: { accept(user) }) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.green)
-                        }
-                        .buttonStyle(.plain) // Use plain style for list buttons
-                        
-                        // Reject Button
-                        Button(action: { reject(user) }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.red)
-                        }
-                        .buttonStyle(.plain)
+            if !pendingRequests.isEmpty {
+                Section(header: Text("Pending Requests")) {
+                    ForEach(pendingRequests) { request in
+                        FriendRequestRow(request: request, onAccept: acceptRequest, onReject: rejectRequest)
                     }
                 }
             }
-            
-            // --- SECTION 2: SEARCH RESULTS ---
-            // This section only appears when you are searching
-            if !searchResults.isEmpty {
-                Section(header: Text("Search Results")) {
-                    ForEach(searchResults) { user in
-                        HStack {
-                            Image(systemName: user.profileIcon)
-                                .font(.title2)
-                                .frame(width: 30)
-                            
-                            Text(user.name)
-                                .font(.headline)
-                            
-                            Spacer()
-                            
-                            // Add Friend Button
-                            Button(action: { add(user) }) {
-                                Image(systemName: "person.fill.badge.plus")
-                                    .font(.title2)
-                                    .foregroundColor(.blue)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-            }
-            
-            // --- SECTION 3: MY FRIENDS ---
+
             Section(header: Text("My Friends")) {
-                if friends.isEmpty {
-                    Text("Search to add friends!")
+                if isLoading && friends.isEmpty {
+                    ProgressView("Loading friends...")
+                } else if friends.isEmpty {
+                    Text("You don't have any friends yet! Tap + to add one.")
                         .foregroundColor(.gray)
-                }
-                ForEach(friends) { user in
-                    HStack {
-                        Image(systemName: user.profileIcon)
-                            .font(.title2)
-                            .frame(width: 30)
-                        
-                        Text(user.name)
-                            .font(.headline)
+                } else {
+                    ForEach(friends) { friend in
+                        FriendRow(friend: friend)
                     }
                 }
+            }
+            
+            if let errorMessage = errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
             }
         }
         .navigationTitle("Friends")
-        // This modifier now keeps the search bar visible
-        .searchable(
-            text: $searchText,
-            placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Search for users"
-        )
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: { showAddFriend = true }) {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .onAppear {
+            Task {
+                await loadFriendsAndRequests()
+            }
+        }
+        .sheet(isPresented: $showAddFriend) {
+            AddFriendView(onFriendAdded: {
+                Task {
+                    await loadFriendsAndRequests()
+                }
+            })
+        }
     }
     
-    // --- Mock Functions ---
-    // These functions simulate the backend logic by
-    // moving users between your local lists.
-    
-    func accept(_ user: SocialUser) {
-        requests.removeAll { $0.id == user.id }
-        friends.append(user)
+    func loadFriendsAndRequests() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            let friendsResponse = try await APIService.shared.getFriends()
+            self.friends = friendsResponse.friends
+            
+            // NOTE: Replace this mock with a call to your real backend endpoint
+            // to fetch pending friend requests (e.g., /api/friend-requests/pending/)
+            self.pendingRequests = [FriendRequest.sample]
+            
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+        isLoading = false
     }
-    
-    func reject(_ user: SocialUser) {
-        requests.removeAll { $0.id == user.id }
+
+    func acceptRequest(request: FriendRequest) {
+        Task {
+            errorMessage = nil
+            do {
+                _ = try await APIService.shared.acceptFriendRequest(requestId: request.id)
+                // Remove from pending list
+                pendingRequests.removeAll { $0.id == request.id }
+                // Reload friends list to show the new friend
+                await loadFriendsAndRequests()
+            } catch {
+                errorMessage = "Failed to accept request: \(error.localizedDescription)"
+            }
+        }
     }
-    
-    func add(_ user: SocialUser) {
-        // In a real app, this would send a request.
-        // For the mock-up, we'll just remove them from the search list
-        // to simulate that the request is "pending".
-        print("Friend request sent to \(user.name)")
-        allUsers.removeAll { $0.id == user.id }
+
+    func rejectRequest(request: FriendRequest) {
+        // NOTE: You would need a rejectFriendRequest method in APIService here.
+        // For now, only the UI element is removed:
+        pendingRequests.removeAll { $0.id == request.id }
     }
 }
 
-#Preview {
-    NavigationStack {
-        FriendsView()
+// --- Supporting Views ---
+
+struct FriendRow: View {
+    let friend: Friend
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .frame(width: 40, height: 40)
+                .foregroundColor(.gray)
+            
+            VStack(alignment: .leading) {
+                Text(friend.firstName ?? (friend.email.split(separator: "@").first.map(String.init) ?? "Friend"))
+                    .fontWeight(.medium)
+                Text(friend.email)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+}
+
+struct FriendRequestRow: View {
+    let request: FriendRequest
+    let onAccept: (FriendRequest) -> Void
+    let onReject: (FriendRequest) -> Void
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text("\(request.senderEmail) wants to be friends.")
+                    .fontWeight(.medium)
+                Text("Pending")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+            }
+            Spacer()
+            
+            Button("Accept") {
+                onAccept(request)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.green)
+            
+            Button("Reject") {
+                onReject(request)
+            }
+            .buttonStyle(.bordered)
+            .foregroundColor(.red)
+        }
     }
 }
