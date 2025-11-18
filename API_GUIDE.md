@@ -483,24 +483,6 @@ if let token = keychain.getAccessToken() {
 }
 ```
 
-### Issue: CORS Error (in simulator)
-
-**Solution**: Make sure backend allows requests from localhost
-
-```python
-# In Django settings.py
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-]
-```
-
-### Issue: Connection Refused
-
-**Solution**: Use correct URL for simulator
-
-- iOS Simulator: `http://localhost:8000`
-- Physical Device: `http://YOUR_COMPUTER_IP:8000`
-
 ## Best Practices
 
 1. **Always handle errors gracefully**
@@ -529,13 +511,7 @@ Button("Load Data") {
 }
 ```
 
-3. **Cache data when appropriate**
-
-```swift
-@AppStorage("cachedLocations") private var cachedData: Data?
-```
-
-4. **Use proper error messages**
+3. **Use proper error messages**
 
 ```swift
 @State private var errorMessage: String?
