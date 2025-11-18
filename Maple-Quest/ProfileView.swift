@@ -158,9 +158,11 @@ struct ProfileField: View {
 struct EditProfileView: View {
     @Binding var user: User
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var authService: AuthService
     
     @State private var selectedImage: UIImage?
     @State private var photoItem: PhotosPickerItem?
+    @State private var isSaving = false
     
     init(user: Binding<User>) {
         self._user = user
@@ -256,11 +258,43 @@ struct EditProfileView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
-                        dismiss()
+                        Task {
+                            isSaving = true
+                            // Save profile changes to backend
+                            let success = await authService.updateProfile(
+                                firstName: user.firstName.isEmpty ? nil : user.firstName,
+                                lastName: user.lastName.isEmpty ? nil : user.lastName,
+                                phoneNumber: user.phoneNumber.isEmpty ? nil : user.phoneNumber
+                            )
+                            isSaving = false
+                            if success {
+                                dismiss()
+                            }
+                        }
                     }
                     .fontWeight(.bold)
+                    .disabled(isSaving)
+                }
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
             }
+            .overlay(
+                Group {
+                    if isSaving {
+                        ZStack {
+                            Color.black.opacity(0.3)
+                                .ignoresSafeArea()
+                            ProgressView()
+                                .scaleEffect(1.5)
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        }
+                    }
+                }
+            )
         }
     }
 }

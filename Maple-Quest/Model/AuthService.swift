@@ -23,8 +23,11 @@ struct TokenPair: Codable {
 struct APIUser: Codable {
     let user_id: String
     let email: String
+    let first_name: String?
+    let last_name: String?
     let phone_no: String?
     let points: Int
+    let profile_pic_url: String?
     let created_at: String
 }
 
@@ -36,6 +39,8 @@ struct LoginRequest: Codable {
 struct RegisterRequest: Codable {
     let email: String
     let password: String
+    let first_name: String?
+    let last_name: String?
     let phone_no: String?
 }
 
@@ -86,8 +91,8 @@ class AuthService: ObservableObject {
             // Convert API user to local User model
             let user = User(
                 id: UUID(), // Generate local UUID
-                firstName: "", // API doesn't provide first/last name, will need to be updated
-                lastName: "",
+                firstName: response.user.first_name ?? "",
+                lastName: response.user.last_name ?? "",
                 email: response.user.email,
                 location: "", // Not provided by API
                 phoneCode: "+1", // Default
@@ -108,12 +113,18 @@ class AuthService: ObservableObject {
     }
     
     // MARK: - Register
-    func register(email: String, password: String, phoneNumber: String?) async {
+    func register(email: String, password: String, firstName: String?, lastName: String?, phoneNumber: String?) async {
         isLoading = true
         errorMessage = nil
         
         do {
-            let request = RegisterRequest(email: email, password: password, phone_no: phoneNumber)
+            let request = RegisterRequest(
+                email: email,
+                password: password,
+                first_name: firstName,
+                last_name: lastName,
+                phone_no: phoneNumber
+            )
             let response: AuthResponse = try await performRequest(
                 endpoint: "/auth/register/",
                 method: "POST",
@@ -126,8 +137,8 @@ class AuthService: ObservableObject {
             // Convert API user to local User model
             let user = User(
                 id: UUID(), // Generate local UUID
-                firstName: "", // Will need to be updated later
-                lastName: "",
+                firstName: response.user.first_name ?? "",
+                lastName: response.user.last_name ?? "",
                 email: response.user.email,
                 location: "",
                 phoneCode: "+1",
@@ -152,6 +163,71 @@ class AuthService: ObservableObject {
         keychain.clearAll()
         currentUser = nil
         isAuthenticated = false
+    }
+    
+    // MARK: - Update Profile
+    func updateProfile(firstName: String?, lastName: String?, phoneNumber: String?) async -> Bool {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            var updateData: [String: String] = [:]
+            if let firstName = firstName { updateData["first_name"] = firstName }
+            if let lastName = lastName { updateData["last_name"] = lastName }
+            if let phoneNumber = phoneNumber { updateData["phone_no"] = phoneNumber }
+            
+            let response: APIUser = try await performRequest(
+                endpoint: "/auth/profile/",
+                method: "PUT",
+                body: updateData
+            )
+            
+            // Update local user model
+            if var user = currentUser {
+                user.firstName = response.first_name ?? ""
+                user.lastName = response.last_name ?? ""
+                user.phoneNumber = response.phone_no ?? ""
+                
+                keychain.saveUserData(user)
+                self.currentUser = user
+            }
+            
+            isLoading = false
+            return true
+            
+        } catch {
+            self.errorMessage = error.localizedDescription
+            isLoading = false
+            return false
+        }
+    }
+    
+    // MARK: - Fetch Profile
+    func fetchProfile() async -> Bool {
+        do {
+            let response: APIUser = try await performRequest(
+                endpoint: "/auth/profile/",
+                method: "GET",
+                body: Optional<String>.none
+            )
+            
+            // Update local user model
+            if var user = currentUser {
+                user.firstName = response.first_name ?? ""
+                user.lastName = response.last_name ?? ""
+                user.phoneNumber = response.phone_no ?? ""
+                user.email = response.email
+                
+                keychain.saveUserData(user)
+                self.currentUser = user
+            }
+            
+            return true
+            
+        } catch {
+            self.errorMessage = error.localizedDescription
+            return false
+        }
     }
     
     // MARK: - Refresh Token

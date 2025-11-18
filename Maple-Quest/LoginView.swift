@@ -202,6 +202,8 @@ struct SignupView: View {
                         await authService.register(
                             email: email,
                             password: password,
+                            firstName: firstName.isEmpty ? nil : firstName,
+                            lastName: lastName.isEmpty ? nil : lastName,
                             phoneNumber: phoneNumber.isEmpty ? nil : phoneNumber
                         )
                     }
