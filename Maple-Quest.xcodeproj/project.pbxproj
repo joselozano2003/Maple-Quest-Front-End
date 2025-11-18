@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2FD5891F2ECBE27F0050989D /* Exceptions for "Maple-Quest" folder in "Maple-Quest" target */ = {
+		2F45FF4A2ECCD7D900745DEE /* Exceptions for "Maple-Quest" folder in "Maple-Quest" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -24,7 +24,7 @@
 		421F01BC2E94498E00C5D852 /* Maple-Quest */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				2FD5891F2ECBE27F0050989D /* Exceptions for "Maple-Quest" folder in "Maple-Quest" target */,
+				2F45FF4A2ECCD7D900745DEE /* Exceptions for "Maple-Quest" folder in "Maple-Quest" target */,
 			);
 			path = "Maple-Quest";
 			sourceTree = "<group>";
