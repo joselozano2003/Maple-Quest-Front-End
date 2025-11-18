@@ -16,51 +16,55 @@ struct PhotoGallery: View {
     @State private var isEditing = false
     
     var body: some View {
-        VStack {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(images, id: \.self) { image in
-                        ZStack(alignment: .topTrailing) {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 100, height: 100)
-                                .cornerRadius(10)
-                                .clipped()
-                                .onTapGesture {
-                                    selectedImage = image
+        ZStack {
+            Color(hex: "EAF6FF")
+                .ignoresSafeArea()
+            VStack {
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 10) {
+                        ForEach(images, id: \.self) { image in
+                            ZStack(alignment: .topTrailing) {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                                    .cornerRadius(10)
+                                    .clipped()
+                                    .onTapGesture {
+                                        selectedImage = image
+                                    }
+                                
+                                if isEditing && images.count > 1 {
+                                    Button(action: {
+                                        onDelete(image)
+                                    }) {
+                                        Image(systemName: "trash.circle.fill")
+                                            .foregroundColor(.red)
+                                            .background(Circle().fill(Color.white))
+                                            .font(.title2)
+                                            .padding(4)
+                                    }
+                                    .transition(.scale)
                                 }
-                            
-                            if isEditing && images.count > 1 {
-                                Button(action: {
-                                    onDelete(image)
-                                }) {
-                                    Image(systemName: "trash.circle.fill")
-                                        .foregroundColor(.red)
-                                        .background(Circle().fill(Color.white))
-                                        .font(.title2)
-                                        .padding(4)
-                                }
-                                .transition(.scale)
                             }
                         }
                     }
+                    .padding()
                 }
-                .padding()
+                
+                if isEditing && images.count == 1 {
+                    Text("You must keep at least one photo.")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .padding(20)
+                }
             }
-            
-            if isEditing && images.count == 1 {
-                Text("You must keep at least one photo.")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .padding(20)
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(isEditing ? "Done" : "Edit") {
-                    withAnimation {
-                        isEditing.toggle()
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(isEditing ? "Done" : "Edit") {
+                        withAnimation {
+                            isEditing.toggle()
+                        }
                     }
                 }
             }
@@ -68,7 +72,7 @@ struct PhotoGallery: View {
         .fullScreenCover(isPresented: .constant(selectedImage != nil)) {
             if let img = selectedImage {
                 ZStack {
-                    Color.white.opacity(0.95)
+                    Color(hex: "EAF6FF")
                         .ignoresSafeArea()
                     Image(uiImage: img)
                         .resizable()
