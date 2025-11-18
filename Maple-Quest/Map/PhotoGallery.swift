@@ -31,7 +31,7 @@ struct PhotoGallery: View {
                                     selectedImage = image
                                 }
                             
-                            if isEditing {
+                            if isEditing && images.count > 1 {
                                 Button(action: {
                                     onDelete(image)
                                 }) {
@@ -47,6 +47,13 @@ struct PhotoGallery: View {
                     }
                 }
                 .padding()
+            }
+            
+            if isEditing && images.count == 1 {
+                Text("You must keep at least one photo.")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .padding(20)
             }
         }
         .toolbar {
