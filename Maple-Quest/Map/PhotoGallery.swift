@@ -51,7 +51,7 @@ struct PhotoGallery: View {
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Edit") {
+                Button(isEditing ? "Done" : "Edit") {
                     withAnimation {
                         isEditing.toggle()
                     }
