@@ -65,5 +65,32 @@ struct PhotoGallery: View {
                 }
             }
         }
+        .fullScreenCover(isPresented: .constant(selectedImage != nil)) {
+            if let img = selectedImage {
+                ZStack {
+                    Color.white.opacity(0.95)
+                        .ignoresSafeArea()
+                    Image(uiImage: img)
+                        .resizable()
+                        .scaledToFit()
+                        .padding()
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button {
+                                selectedImage = nil
+                            } label: {
+                                Image(systemName: "xmark.circle")
+                                    .font(.system(size: 32))
+                                    .foregroundColor(.red)
+                                    .padding()
+                            }
+                        }
+                        Spacer()
+                    }
+                }
+            }
+        }
+
     }
 }
