@@ -94,7 +94,7 @@ struct HomeView: View {
                         HStack(spacing: 8) {
                             Image(systemName: "star.fill")
                                 .font(.title3)
-                                .foregroundColor(.yellow)
+                                .foregroundColor(.red)
                             Text("Highlights")
                                 .font(.system(size: 22)).bold()
                         }
