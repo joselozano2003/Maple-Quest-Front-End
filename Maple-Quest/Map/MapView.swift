@@ -19,6 +19,7 @@ struct MapView: View {
     )
     
     @State private var isInfoSelected: Bool = false
+    @State private var isListSelected: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -50,13 +51,87 @@ struct MapView: View {
                             .foregroundColor(.red)
                     }
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isListSelected = true
+                    } label: {
+                        Image(systemName: "list.bullet.circle")
+                            .foregroundColor(.red)
+                    }
+                }
             }
             .sheet(isPresented: $isInfoSelected) {
                 InfoSheetView(isPresented: $isInfoSelected)
             }
+            .fullScreenCover(isPresented: $isListSelected) {
+                LandmarkListView(
+                    isPresented: $isListSelected,
+                    visitedLandmarks: visitedLandmarks,
+                    allLandmarks: landmarks
+                )
+            }
+
         }
     }
 }
+
+struct LandmarkListView: View {
+    @Binding var isPresented: Bool
+    var visitedLandmarks: [String]
+    var allLandmarks: [Landmark]
+    @EnvironmentObject var locationManager: LocationManager
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 12) {
+                    // Combine visited and unvisited landmarks
+                    ForEach(allLandmarks) { landmark in
+                        HStack(spacing: 12) {
+                            Image(landmark.imageName)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 80, height: 60)
+                                .cornerRadius(10)
+                                .shadow(radius: 2)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(landmark.name)
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text(landmark.province)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: visitedLandmarks.contains(landmark.name) ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(visitedLandmarks.contains(landmark.name) ? .red : .gray)
+                        }
+                        .padding(8)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("All Landmarks")
+            .toolbar {
+                ToolbarItem(placement: .bottomBar) {
+                    Button("Done") {
+                        isPresented = false
+                    }
+                    .font(.headline)
+                    .foregroundColor(.red)
+                }
+            }
+        }
+    }
+}
+
+
 
 struct InfoSheetView: View {
     @Binding var isPresented: Bool
