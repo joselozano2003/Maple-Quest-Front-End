@@ -34,6 +34,7 @@ struct HomeView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 100)
+                        .offset(y: 30)
                     VStack(alignment: .leading) {
                         ZStack {
                             Text("Explore")
@@ -56,7 +57,6 @@ struct HomeView: View {
                         .padding(.top, -10)
                     }
                     .font(.largeTitle)
-                    .padding(.top, -20)
                     
                     VStack(alignment: .leading) {
                         VStack(alignment: .leading, spacing: 8) {
@@ -143,7 +143,9 @@ struct HomeView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            }}
+            }
+            .ignoresSafeArea()
+        }
     }
 }
 
