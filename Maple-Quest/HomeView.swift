@@ -6,35 +6,49 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct HomeView: View {
     let user: User
-    // This property receives the visited count from ContentView
     let visitedCount: Int
-    // Add binding to update landmarks
     @Binding var visitedLandmarks: [String]
-    // Get location manager from environment
     @EnvironmentObject var locationManager: LocationManager
     
     // Calculate progress for the progress bar
     private var progress: Double {
-        // Ensure landmarks.count is not zero to avoid division by zero
         guard !landmarks.isEmpty else { return 0.0 }
         return Double(visitedCount) / Double(landmarks.count)
+    }
+    
+    // Top 3 nearby landmarks
+    private var nearbyLandmarks: [Landmark] {
+        guard let userLocation = locationManager.userLocation else { return [] }
+
+        return landmarks
+            .map { landmark in
+                (landmark, CLLocation(latitude: landmark.location.latitude, longitude: landmark.location.longitude)
+                    .distance(from: CLLocation(latitude: userLocation.latitude, longitude: userLocation.longitude)))
+            }
+            .sorted { $0.1 < $1.1 }
+            .prefix(3)
+            .map { $0.0 }
     }
     
     var body: some View {
         ZStack {
             Color(hex: "EAF6FF")
                 .ignoresSafeArea()
+            
             ScrollView {
                 VStack(alignment: .leading) {
+                    
                     // Title Section
                     Image("cloud")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 100)
                         .offset(y: 30)
+                    
                     VStack(alignment: .leading) {
                         ZStack {
                             Text("Explore")
@@ -47,7 +61,6 @@ struct HomeView: View {
                         HStack {
                             Text("Beautiful").bold()
                             Text("Canada!").bold().foregroundColor(.red)
-                            // Add a thematic maple leaf icon
                             Image("maple-leaf-icon")
                                 .resizable()
                                 .scaledToFit()
@@ -59,12 +72,12 @@ struct HomeView: View {
                     .font(.largeTitle)
                     
                     VStack(alignment: .leading) {
+                        // Welcome + Progress Bar
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Welcome, \(user.firstName)!")
                                 .font(.title2)
                                 .fontWeight(.bold)
                             
-                            // Custom Progress Bar
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Your Progress: \(visitedCount) of \(landmarks.count) landmarks visited")
                                     .font(.subheadline)
@@ -76,10 +89,11 @@ struct HomeView: View {
                             }
                         }
                         .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading) // Make it full width
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .cornerRadius(15)
                         .padding(.horizontal, -15)
                         
+                        // Explore Landmarks Near You Header
                         HStack(spacing: 8) {
                             Image(systemName: "mappin.and.ellipse")
                                 .font(.title3)
@@ -89,8 +103,53 @@ struct HomeView: View {
                         }
                         .padding(.top)
                         
-                        MapPreview()
+                        // Top 3 Nearby Landmarks List
+                        VStack(spacing: 12) {
+                            ForEach(nearbyLandmarks) { landmark in
+                                HStack(spacing: 12) {
+                                    Image(landmark.imageName)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 80, height: 60)
+                                        .cornerRadius(10)
+                                        .shadow(radius: 2)
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(landmark.name)
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                        Text(landmark.province)
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                        
+                                        if let userLocation = locationManager.userLocation {
+                                            let distance = Int(
+                                                CLLocation(latitude: landmark.location.latitude,
+                                                           longitude: landmark.location.longitude)
+                                                    .distance(from: CLLocation(latitude: userLocation.latitude,
+                                                                               longitude: userLocation.longitude)) / 1000
+                                            )
+                                            Text("\(distance) km away")
+                                                .font(.caption)
+                                                .foregroundColor(.gray)
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: visitedLandmarks.contains(landmark.name) ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(visitedLandmarks.contains(landmark.name) ? .red : .gray)
+                                }
+                                .padding(8)
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
+                            }
+                        }
+
+                        .padding(.vertical)
                         
+                        // Highlights Header
                         HStack(spacing: 8) {
                             Image(systemName: "star.fill")
                                 .font(.title3)
@@ -100,12 +159,11 @@ struct HomeView: View {
                         }
                         .padding(.top)
                         
+                        // Highlights Carousel
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 20) {
                                 ForEach(landmarks) { landmark in
-                                    // Wrap the card in a NavigationLink
                                     NavigationLink {
-                                        // Destination is the LocationDetailView
                                         LocationDetailView(
                                             landmark: landmark,
                                             userLocation: locationManager.userLocation,
