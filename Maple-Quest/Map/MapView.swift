@@ -76,9 +76,17 @@ struct MapView: View {
 }
 
 enum LandmarkFilter: String, CaseIterable {
-    case all = "All"
-    case visited = "Visited"
-    case unvisited = "Unvisited"
+    case all = "All Landmarks"
+    case visited = "Visited Landmarks"
+    case unvisited = "Unvisited Landmarks"
+    
+    var icon: Image {
+        switch self {
+        case .all: return Image(systemName: "map.circle")
+            case .visited: return Image(systemName: "mappin.circle")
+            case .unvisited: return Image(systemName: "mappin.slash.circle")
+        }
+    }
 }
 
 struct LandmarkListView: View {
@@ -141,9 +149,15 @@ struct LandmarkListView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         ForEach(LandmarkFilter.allCases, id: \.self) { option in
-                            Button(option.rawValue) {
+                            Button {
                                 filter = option
+                            } label: {
+                                HStack {
+                                    option.icon
+                                    Text(option.rawValue)
+                                }
                             }
+                            .tint(.red)
                         }
                     } label: {
                         Image(systemName: "line.3.horizontal.decrease.circle")
