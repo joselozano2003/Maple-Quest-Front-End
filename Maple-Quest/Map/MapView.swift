@@ -42,6 +42,9 @@ struct MapView: View {
                     }
                 }
             }
+            .mapControls {
+                MapUserLocationButton()
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -184,8 +187,6 @@ struct LandmarkListView: View {
         }
     }
 }
-
-
 
 struct InfoSheetView: View {
     @Binding var isPresented: Bool
