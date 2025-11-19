@@ -6,6 +6,7 @@ struct FriendsView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var showAddFriend = false
+    @StateObject private var authService = AuthService.shared
 
     var body: some View {
         List {
@@ -61,12 +62,26 @@ struct FriendsView: View {
         isLoading = true
         errorMessage = nil
         do {
+            // Load friends
             let friendsResponse = try await APIService.shared.getFriends()
             self.friends = friendsResponse.friends
             
-            // NOTE: Replace this mock with a call to your real backend endpoint
-            // to fetch pending friend requests (e.g., /api/friend-requests/pending/)
-            self.pendingRequests = [FriendRequest.sample]
+            // Load all friend requests
+            let allRequests = try await APIService.shared.getFriendRequests()
+            
+            // Filter to show only pending requests where current user is the recipient
+            // (Don't show requests that the current user sent)
+            if let currentUser = authService.currentUser {
+                // Note: currentUser.id is UUID, but API uses string user_id
+                // We need to match against the backend user_id stored in keychain or fetch from API
+                self.pendingRequests = allRequests.filter { request in
+                    request.isPending
+                    // Optionally filter to only show received requests:
+                    // && request.to_user == currentUserIdFromBackend
+                }
+            } else {
+                self.pendingRequests = allRequests.filter { $0.isPending }
+            }
             
         } catch {
             self.errorMessage = error.localizedDescription
@@ -90,9 +105,16 @@ struct FriendsView: View {
     }
 
     func rejectRequest(request: FriendRequest) {
-        // NOTE: You would need a rejectFriendRequest method in APIService here.
-        // For now, only the UI element is removed:
-        pendingRequests.removeAll { $0.id == request.id }
+        Task {
+            errorMessage = nil
+            do {
+                _ = try await APIService.shared.rejectFriendRequest(requestId: request.id)
+                // Remove from pending list
+                pendingRequests.removeAll { $0.id == request.id }
+            } catch {
+                errorMessage = "Failed to reject request: \(error.localizedDescription)"
+            }
+        }
     }
 }
 
@@ -103,17 +125,44 @@ struct FriendRow: View {
     
     var body: some View {
         HStack {
-            Image(systemName: "person.circle.fill")
-                .resizable()
+            // Profile image or placeholder
+            if let profileUrl = friend.profile_pic_url, let url = URL(string: profileUrl) {
+                AsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } placeholder: {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .foregroundColor(.gray)
+                }
                 .frame(width: 40, height: 40)
-                .foregroundColor(.gray)
+                .clipShape(Circle())
+            } else {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.gray)
+            }
             
             VStack(alignment: .leading) {
-                Text(friend.firstName ?? (friend.email.split(separator: "@").first.map(String.init) ?? "Friend"))
+                Text(friend.displayName)
                     .fontWeight(.medium)
                 Text(friend.email)
                     .font(.subheadline)
                     .foregroundColor(.gray)
+            }
+            
+            Spacer()
+            
+            // Show points
+            HStack(spacing: 4) {
+                Image(systemName: "star.fill")
+                    .font(.caption)
+                    .foregroundColor(.yellow)
+                Text("\(friend.points)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -126,26 +175,58 @@ struct FriendRequestRow: View {
     
     var body: some View {
         HStack {
-            VStack(alignment: .leading) {
-                Text("\(request.senderEmail) wants to be friends.")
+            // Profile image
+            if let profileUrl = request.from_user_details?.profile_pic_url, 
+               let url = URL(string: profileUrl) {
+                AsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } placeholder: {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .foregroundColor(.gray)
+                }
+                .frame(width: 40, height: 40)
+                .clipShape(Circle())
+            } else {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.gray)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(request.senderName)
                     .fontWeight(.medium)
+                if let email = request.from_user_details?.email {
+                    Text(email)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
                 Text("Pending")
                     .font(.caption)
                     .foregroundColor(.orange)
             }
+            
             Spacer()
             
-            Button("Accept") {
-                onAccept(request)
+            VStack(spacing: 8) {
+                Button("Accept") {
+                    onAccept(request)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.green)
+                .controlSize(.small)
+                
+                Button("Reject") {
+                    onReject(request)
+                }
+                .buttonStyle(.bordered)
+                .foregroundColor(.red)
+                .controlSize(.small)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.green)
-            
-            Button("Reject") {
-                onReject(request)
-            }
-            .buttonStyle(.bordered)
-            .foregroundColor(.red)
         }
+        .padding(.vertical, 4)
     }
 }
