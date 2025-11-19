@@ -19,6 +19,7 @@ struct MapView: View {
     )
     
     @State private var isInfoSelected: Bool = false
+    @State private var isListSelected: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -50,13 +51,141 @@ struct MapView: View {
                             .foregroundColor(.red)
                     }
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isListSelected = true
+                    } label: {
+                        Image(systemName: "list.bullet.circle")
+                            .foregroundColor(.red)
+                    }
+                }
             }
             .sheet(isPresented: $isInfoSelected) {
                 InfoSheetView(isPresented: $isInfoSelected)
             }
+            .fullScreenCover(isPresented: $isListSelected) {
+                LandmarkListView(
+                    isPresented: $isListSelected,
+                    visitedLandmarks: visitedLandmarks,
+                    allLandmarks: landmarks
+                )
+            }
+
         }
     }
 }
+
+enum LandmarkFilter: String, CaseIterable {
+    case all = "All Landmarks"
+    case visited = "Visited Landmarks"
+    case unvisited = "Unvisited Landmarks"
+    
+    var icon: Image {
+        switch self {
+        case .all: return Image(systemName: "map.circle")
+            case .visited: return Image(systemName: "mappin.circle")
+            case .unvisited: return Image(systemName: "mappin.slash.circle")
+        }
+    }
+}
+
+struct LandmarkListView: View {
+    @Binding var isPresented: Bool
+    
+    var visitedLandmarks: [String]
+    var allLandmarks: [Landmark]
+    
+    @State private var filter: LandmarkFilter = .all
+    var filteredLandmarks: [Landmark] {
+        switch filter {
+        case .all:
+            return allLandmarks
+        case .visited:
+            return allLandmarks.filter { visitedLandmarks.contains($0.name) }
+        case .unvisited:
+            return allLandmarks.filter { !visitedLandmarks.contains($0.name) }
+        }
+    }
+
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 12) {
+                    // Combine visited and unvisited landmarks
+                    ForEach(filteredLandmarks) { landmark in
+                        HStack(spacing: 12) {
+                            Image(landmark.imageName)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 80, height: 60)
+                                .cornerRadius(10)
+                                .shadow(radius: 2)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(landmark.name)
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text(landmark.province)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: visitedLandmarks.contains(landmark.name) ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(visitedLandmarks.contains(landmark.name) ? .red : .gray)
+                        }
+                        .padding(8)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle(filterTitle())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        ForEach(LandmarkFilter.allCases, id: \.self) { option in
+                            Button {
+                                filter = option
+                            } label: {
+                                HStack {
+                                    option.icon
+                                    Text(option.rawValue)
+                                }
+                            }
+                            .tint(.red)
+                        }
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .font(.title2)
+                            .foregroundColor(.red)
+                    }
+                }
+                ToolbarItem(placement: .bottomBar) {
+                    Button("Done") {
+                        isPresented = false
+                    }
+                    .font(.headline)
+                    .foregroundColor(.red)
+                }
+            }
+        }
+    }
+    
+    func filterTitle() -> String {
+        switch filter {
+            case .all: return "All Landmarks"
+            case .visited: return "Visited Landmarks"
+            case .unvisited: return "Unvisited Landmarks"
+        }
+    }
+}
+
+
 
 struct InfoSheetView: View {
     @Binding var isPresented: Bool
