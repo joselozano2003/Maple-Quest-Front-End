@@ -35,7 +35,7 @@ struct AchievementsView: View {
                         LeaderboardView(myVisitCount: myVisitCount)
                     }
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color(.white))
                     .cornerRadius(12)
                     
                     // --- EXISTING ACHIEVEMENTS ---
@@ -57,6 +57,7 @@ struct AchievementsView: View {
                 }
                 .padding()
             }
+            .background(Color(hex: "EAF6FF"))
             .navigationTitle("Achievements")
         }
     }
@@ -148,7 +149,7 @@ struct AchievementRow: View {
             }
         }
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color(.white))
         .cornerRadius(12)
         // fade if it's locked
         .opacity(isUnlocked ? 1.0 : 0.6)
