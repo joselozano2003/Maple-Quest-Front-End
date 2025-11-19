@@ -75,18 +75,37 @@ struct MapView: View {
     }
 }
 
+enum LandmarkFilter: String, CaseIterable {
+    case all = "All"
+    case visited = "Visited"
+    case unvisited = "Unvisited"
+}
+
 struct LandmarkListView: View {
     @Binding var isPresented: Bool
+    
     var visitedLandmarks: [String]
     var allLandmarks: [Landmark]
-    @EnvironmentObject var locationManager: LocationManager
+    
+    @State private var filter: LandmarkFilter = .all
+    var filteredLandmarks: [Landmark] {
+        switch filter {
+        case .all:
+            return allLandmarks
+        case .visited:
+            return allLandmarks.filter { visitedLandmarks.contains($0.name) }
+        case .unvisited:
+            return allLandmarks.filter { !visitedLandmarks.contains($0.name) }
+        }
+    }
+
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 12) {
                     // Combine visited and unvisited landmarks
-                    ForEach(allLandmarks) { landmark in
+                    ForEach(filteredLandmarks) { landmark in
                         HStack(spacing: 12) {
                             Image(landmark.imageName)
                                 .resizable()
@@ -117,8 +136,21 @@ struct LandmarkListView: View {
                 }
                 .padding()
             }
-            .navigationTitle("All Landmarks")
+            .navigationTitle(filterTitle())
             .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        ForEach(LandmarkFilter.allCases, id: \.self) { option in
+                            Button(option.rawValue) {
+                                filter = option
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .font(.title2)
+                            .foregroundColor(.red)
+                    }
+                }
                 ToolbarItem(placement: .bottomBar) {
                     Button("Done") {
                         isPresented = false
@@ -127,6 +159,14 @@ struct LandmarkListView: View {
                     .foregroundColor(.red)
                 }
             }
+        }
+    }
+    
+    func filterTitle() -> String {
+        switch filter {
+            case .all: return "All Landmarks"
+            case .visited: return "Visited Landmarks"
+            case .unvisited: return "Unvisited Landmarks"
         }
     }
 }
