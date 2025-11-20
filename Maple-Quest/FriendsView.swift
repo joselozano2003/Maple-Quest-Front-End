@@ -71,15 +71,12 @@ struct FriendsView: View {
             
             // Filter to show only pending requests where current user is the recipient
             // (Don't show requests that the current user sent)
-            if let currentUser = authService.currentUser {
-                // Note: currentUser.id is UUID, but API uses string user_id
-                // We need to match against the backend user_id stored in keychain or fetch from API
+            if let backendUserId = authService.getBackendUserId() {
                 self.pendingRequests = allRequests.filter { request in
-                    request.isPending
-                    // Optionally filter to only show received requests:
-                    // && request.to_user == currentUserIdFromBackend
+                    request.isPending && request.to_user == backendUserId
                 }
             } else {
+                // Fallback: show all pending requests if we can't get user ID
                 self.pendingRequests = allRequests.filter { $0.isPending }
             }
             

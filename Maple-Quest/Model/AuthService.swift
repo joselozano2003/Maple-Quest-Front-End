@@ -88,6 +88,9 @@ class AuthService: ObservableObject {
             // Store tokens and user data
             keychain.saveTokens(access: response.tokens.access, refresh: response.tokens.refresh)
             
+            // Store backend user_id for API calls
+            UserDefaults.standard.set(response.user.user_id, forKey: "backend_user_id")
+            
             // Convert API user to local User model
             let user = User(
                 id: UUID(), // Generate local UUID
@@ -134,6 +137,9 @@ class AuthService: ObservableObject {
             // Store tokens and user data
             keychain.saveTokens(access: response.tokens.access, refresh: response.tokens.refresh)
             
+            // Store backend user_id for API calls
+            UserDefaults.standard.set(response.user.user_id, forKey: "backend_user_id")
+            
             // Convert API user to local User model
             let user = User(
                 id: UUID(), // Generate local UUID
@@ -161,8 +167,14 @@ class AuthService: ObservableObject {
     // MARK: - Logout
     func logout() {
         keychain.clearAll()
+        UserDefaults.standard.removeObject(forKey: "backend_user_id")
         currentUser = nil
         isAuthenticated = false
+    }
+    
+    // MARK: - Get Backend User ID
+    func getBackendUserId() -> String? {
+        return UserDefaults.standard.string(forKey: "backend_user_id")
     }
     
     // MARK: - Update Profile
