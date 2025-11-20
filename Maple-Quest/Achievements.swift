@@ -11,17 +11,27 @@ struct AchievementsView: View {
 
     @Binding var visitedLandmarks: [String]
     
-    // We get the user's current count from the binding
+    // User's current count from the binding
     var myVisitCount: Int {
         visitedLandmarks.count
+    }
+    
+    // Filter for Unlocked Achievements
+    var unlockedAchievements: [Achievement] {
+        allAchievements.filter { isUnlocked($0) }
+    }
+    
+    // Filter for Locked Achievements
+    var lockedAchievements: [Achievement] {
+        allAchievements.filter { !isUnlocked($0) }
     }
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) { // Added more spacing
+                VStack(spacing: 24) {
                     
-                    // --- NEW LEADERBOARD SECTION ---
+                    // --- LEADERBOARD SECTION ---
                     VStack(alignment: .leading) {
                         HStack {
                             Text("Leaderboard")
@@ -31,29 +41,52 @@ struct AchievementsView: View {
                                 .foregroundColor(.yellow)
                         }
                         
-                        // Pass the user's real count to the leaderboard view
                         LeaderboardView(myVisitCount: myVisitCount)
                     }
                     .padding()
-                    .background(Color(.white))
+                    .background(Color.white)
                     .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
                     
-                    // --- EXISTING ACHIEVEMENTS ---
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("My Milestones")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .padding(.bottom, 8)
-                        
-                        // Loop through all possible achievements
-                        ForEach(allAchievements) { achievement in
-                            // Check if the user has visited enough landmarks
-                            let isUnlocked = visitedLandmarks.count >= achievement.requiredVisits
+                    // --- UNLOCKED ACHIEVEMENTS ---
+                    if !unlockedAchievements.isEmpty {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Unlocked")
+                                .font(.title2)
+                                .fontWeight(.bold)
                             
-                            AchievementRow(achievement: achievement, isUnlocked: isUnlocked)
+                            ForEach(unlockedAchievements) { achievement in
+                                AchievementCard(
+                                    achievement: achievement,
+                                    isUnlocked: true,
+                                    progress: 1.0,
+                                    progressLabel: "Completed"
+                                )
+                            }
                         }
                     }
-                    .padding()
+                    
+                    // --- LOCKED ACHIEVEMENTS (Next Milestones) ---
+                    if !lockedAchievements.isEmpty {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Next Milestones")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .opacity(0.8)
+                            
+                            ForEach(lockedAchievements) { achievement in
+                                let progressValue = calculateProgress(achievement)
+                                let progressLabel = calculateProgressLabel(achievement)
+                                
+                                AchievementCard(
+                                    achievement: achievement,
+                                    isUnlocked: false,
+                                    progress: progressValue,
+                                    progressLabel: progressLabel
+                                )
+                            }
+                        }
+                    }
                 }
                 .padding()
             }
@@ -61,32 +94,130 @@ struct AchievementsView: View {
             .navigationTitle("Achievements")
         }
     }
+    
+    // MARK: - Logic Helpers
+    
+    func isUnlocked(_ achievement: Achievement) -> Bool {
+        switch achievement.criteria {
+        case .visitCount(let required):
+            return visitedLandmarks.count >= required
+        case .specificLandmark(let name):
+            return visitedLandmarks.contains(name)
+        }
+    }
+    
+    func calculateProgress(_ achievement: Achievement) -> Double {
+        switch achievement.criteria {
+        case .visitCount(let required):
+            return min(Double(visitedLandmarks.count) / Double(required), 1.0)
+        case .specificLandmark:
+            return 0.0 // Specific landmarks are binary (0 or 1)
+        }
+    }
+    
+    func calculateProgressLabel(_ achievement: Achievement) -> String {
+        switch achievement.criteria {
+        case .visitCount(let required):
+            return "\(visitedLandmarks.count)/\(required)"
+        case .specificLandmark:
+            return "Not Visited"
+        }
+    }
 }
 
-// --- NEW LEADERBOARD VIEW ---
+// MARK: - Subviews
+
+struct AchievementCard: View {
+    let achievement: Achievement
+    let isUnlocked: Bool
+    let progress: Double
+    let progressLabel: String
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Icon Circle
+            ZStack {
+                Circle()
+                    .fill(isUnlocked ? achievement.level.color.opacity(0.2) : Color.gray.opacity(0.1))
+                    .frame(width: 60, height: 60)
+                
+                Image(systemName: achievement.iconName)
+                    .font(.title2)
+                    .foregroundColor(isUnlocked ? achievement.level.color : .gray)
+            }
+            
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text(achievement.title)
+                        .font(.headline)
+                        .foregroundColor(isUnlocked ? .primary : .gray)
+                    
+                    Spacer()
+                    
+                    if isUnlocked {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundColor(achievement.level.color)
+                    }
+                }
+                
+                Text(achievement.description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                
+                // Progress Bar
+                HStack {
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            // Background track
+                            RoundedRectangle(cornerRadius: 5)
+                                .frame(height: 6)
+                                .foregroundColor(Color.gray.opacity(0.2))
+                            
+                            // Fill track
+                            RoundedRectangle(cornerRadius: 5)
+                                .frame(width: geometry.size.width * CGFloat(progress), height: 6)
+                                .foregroundColor(isUnlocked ? achievement.level.color : .gray)
+                                .animation(.spring(), value: progress)
+                        }
+                    }
+                    .frame(height: 6)
+                    
+                    Text(progressLabel)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .frame(width: 60, alignment: .trailing)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(isUnlocked ? 0.05 : 0.01), radius: 5, x: 0, y: 2)
+        // Fade out slightly if locked
+        .saturation(isUnlocked ? 1.0 : 0.0)
+        .opacity(isUnlocked ? 1.0 : 0.8)
+    }
+}
+
 struct LeaderboardView: View {
-    
-    // Get the user's real count
     let myVisitCount: Int
-    
-    // Use the mock data for now
-    // In a real app, this data would be fetched from your server
+    // Using the mock data from SocialMockData.swift
     @State private var friends = mockFriends
 
     var body: some View {
         VStack(spacing: 12) {
-            // Loop through the mock friends list
             ForEach(Array(friends.enumerated()), id: \.element.id) { index, friend in
                 
-                // This logic dynamically updates the "You" row
-                // with your real visited count
+                // Check if this row represents the current user
                 let isMe = (friend.name == "You (John)")
                 let score = isMe ? myVisitCount : friend.visitedCount
                 
                 HStack(spacing: 12) {
                     Text("\(index + 1)")
                         .font(.headline)
-                        .frame(width: 25)
+                        .foregroundColor(.secondary)
+                        .frame(width: 20)
 
                     Image(systemName: friend.profileImage)
                         .font(.title2)
@@ -100,59 +231,19 @@ struct LeaderboardView: View {
                     Spacer()
                     
                     Text("\(score)")
-                        .font(.title3)
-                        .fontWeight(.semibold)
+                        .font(.system(.body, design: .monospaced))
+                        .fontWeight(.bold)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
-                        .background(isMe ? Color.red.opacity(0.2) : Color.blue.opacity(0.2))
-                        .cornerRadius(20)
+                        .background(isMe ? Color.red.opacity(0.1) : Color.blue.opacity(0.1))
+                        .cornerRadius(8)
                 }
                 if index != friends.count - 1 {
                     Divider()
+                        .padding(.leading, 30)
                 }
             }
         }
-    }
-}
-
-struct AchievementRow: View {
-    let achievement: Achievement
-    let isUnlocked: Bool
-    
-    var body: some View {
-        HStack(spacing: 16) {
-            Image(systemName: achievement.iconName)
-                .font(.largeTitle)
-                .foregroundColor(isUnlocked ? achievement.color : .gray.opacity(0.5))
-                .frame(width: 50)
-            
-            VStack(alignment: .leading) {
-                Text(achievement.title)
-                    .font(.headline)
-                    .foregroundColor(isUnlocked ? .primary : .gray)
-                
-                Text(achievement.description)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            if isUnlocked {
-                Image(systemName: "checkmark.seal.fill")
-                    .foregroundColor(achievement.color)
-                    .font(.title)
-            } else {
-                Image(systemName: "lock.fill")
-                    .foregroundColor(.gray.opacity(0.5))
-                    .font(.title)
-            }
-        }
-        .padding()
-        .background(Color(.white))
-        .cornerRadius(12)
-        // fade if it's locked
-        .opacity(isUnlocked ? 1.0 : 0.6)
     }
 }
 
