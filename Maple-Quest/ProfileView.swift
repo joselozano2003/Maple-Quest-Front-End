@@ -18,7 +18,7 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 35) {
                     
                     // Avatar
                     ZStack {
@@ -45,30 +45,16 @@ struct ProfileView: View {
 
                     // Name & Email
                     VStack(spacing: 4) {
-                        Text(user.firstName)
+                        Text(user.fullName)
                             .font(.title2)
                             .fontWeight(.semibold)
-                        Text(user.email)
-                            .foregroundColor(.gray)
-                            .font(.subheadline)
+//                        Text(user.email)
+//                            .foregroundColor(.gray)
+//                            .font(.subheadline)
                     }
                     
                     // Profile Actions
                     VStack(spacing: 12) {
-                        // Edit Profile Row
-                        Button(action: { isEditing = true }) {
-                            HStack {
-                                Label("Edit Profile", systemImage: "pencil")
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                            }
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
-                        }
-                        
                         // Friends Row
                         NavigationLink {
                             FriendsView()
@@ -84,28 +70,13 @@ struct ProfileView: View {
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
                         }
-                        
-                        // Logout Button
-                        Button(action: {
-                            authService.logout()
-                        }) {
-                            HStack {
-                                Label("Sign Out", systemImage: "arrow.right.square")
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.red)
-                                Spacer()
-                            }
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
-                        }
                     }
                     .padding(.horizontal)
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        ProfileField(title: "First Name", value: $user.firstName)
-                        ProfileField(title: "Last Name", value: $user.lastName)
-                        ProfileField(title: "Email", value: $user.email)
                         ProfileField(title: "Location", value: $user.location)
+                        ProfileField(title: "Email", value:
+                            $user.email)
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Mobile Number")
                                 .font(.subheadline)
@@ -116,6 +87,24 @@ struct ProfileView: View {
                                 Text(user.phoneNumber)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    // Profile Actions
+                    VStack(spacing: 12) {
+                        // Logout Button
+                        Button(action: {
+                            authService.logout()
+                        }) {
+                            HStack {
+                                Label("Sign Out", systemImage: "arrow.right.square")
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.red)
+                                Spacer()
+                            }
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
                         }
@@ -254,8 +243,15 @@ struct EditProfileView: View {
                     .padding(.horizontal)
                 }
             }
-            .navigationTitle("Edit Profile")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Edit Profile")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .padding(.top, 2)
+                        .frame(maxWidth: .infinity)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         Task {
