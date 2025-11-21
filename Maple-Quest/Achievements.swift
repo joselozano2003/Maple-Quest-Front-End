@@ -7,9 +7,18 @@
 
 import SwiftUI
 
-struct AchievementsView: View {
+// Helper struct to normalize data between "Me" (Local) and "Friends" (Backend)
+struct LeaderboardEntry: Identifiable {
+    let id: String
+    let name: String
+    let score: Int
+    let imageURL: String?
+    let isMe: Bool
+}
 
+struct AchievementsView: View {
     @Binding var visitedLandmarks: [String]
+    @EnvironmentObject var authService: AuthService // Need this to get "My" name/photo
     
     // User's current count from the binding
     var myVisitCount: Int {
@@ -41,7 +50,12 @@ struct AchievementsView: View {
                                 .foregroundColor(.yellow)
                         }
                         
-                        LeaderboardView(myVisitCount: myVisitCount)
+                        // We pass "me" details so the leaderboard can build the entry
+                        LeaderboardView(
+                            myVisitCount: myVisitCount,
+                            myName: authService.currentUser?.firstName ?? "You",
+                            myPhotoData: authService.currentUser?.profileImageData
+                        )
                     }
                     .padding()
                     .background(Color.white)
@@ -201,7 +215,6 @@ struct AchievementCard: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(isUnlocked ? 0.05 : 0.01), radius: 5, x: 0, y: 2)
-        // Fade out slightly if locked
         .saturation(isUnlocked ? 1.0 : 0.0)
         .opacity(isUnlocked ? 1.0 : 0.8)
     }
@@ -209,11 +222,132 @@ struct AchievementCard: View {
 
 struct LeaderboardView: View {
     let myVisitCount: Int
-    // Using the mock data from SocialMockData.swift
-    @State private var friends = mockFriends
+    let myName: String
+    let myPhotoData: Data?
+    
+    @State private var leaderboardEntries: [LeaderboardEntry] = []
+    @State private var isLoading = true
 
     var body: some View {
         VStack(spacing: 12) {
+<<<<<<< HEAD
+            if isLoading {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+                .padding()
+            } else if leaderboardEntries.isEmpty {
+                // This shouldn't happen because "You" are always an entry
+                Text("No data available")
+            } else {
+                ForEach(Array(leaderboardEntries.enumerated()), id: \.element.id) { index, entry in
+                    HStack(spacing: 12) {
+                        // Rank Number
+                        Text("\(index + 1)")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                            .frame(width: 20)
+
+                        // Profile Image (Handles both URL and Local Data)
+                        Group {
+                            if entry.isMe, let data = myPhotoData, let uiImage = UIImage(data: data) {
+                                // Case 1: My local photo
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                            } else if let urlString = entry.imageURL, let url = URL(string: urlString) {
+                                // Case 2: Friend's URL photo
+                                AsyncImage(url: url) { image in
+                                    image.resizable().scaledToFill()
+                                } placeholder: {
+                                    Color.gray.opacity(0.3)
+                                }
+                            } else {
+                                // Case 3: Placeholder
+                                Image(systemName: "person.crop.circle.fill")
+                                    .resizable()
+                                    .foregroundColor(entry.isMe ? .red : .blue)
+                            }
+                        }
+                        .frame(width: 30, height: 30)
+                        .clipShape(Circle())
+
+                        // Name
+                        Text(entry.isMe ? "You" : entry.name)
+                            .font(.headline)
+                            .fontWeight(entry.isMe ? .bold : .regular)
+                            .foregroundColor(entry.isMe ? .primary : .secondary)
+                        
+                        Spacer()
+                        
+                        // Score
+                        Text("\(entry.score)")
+                            .font(.system(.body, design: .monospaced))
+                            .fontWeight(.bold)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(entry.isMe ? Color.red.opacity(0.1) : Color.blue.opacity(0.1))
+                            .cornerRadius(8)
+                    }
+                    if index != leaderboardEntries.count - 1 {
+                        Divider()
+                            .padding(.leading, 30)
+                    }
+                }
+            }
+        }
+        .onAppear {
+            loadLeaderboard()
+        }
+    }
+    
+    func loadLeaderboard() {
+        Task {
+            do {
+                // 1. Fetch friends from backend
+                let response = try await APIService.shared.getFriends()
+                let friends = response.friends
+                
+                // 2. Convert Friends to LeaderboardEntry
+                var entries = friends.map { friend in
+                    LeaderboardEntry(
+                        id: friend.user_id,
+                        name: friend.displayName,
+                        score: friend.points, // Using the points from backend
+                        imageURL: friend.profile_pic_url,
+                        isMe: false
+                    )
+                }
+                
+                // 3. Create "Me" entry
+                let me = LeaderboardEntry(
+                    id: "me",
+                    name: myName,
+                    score: myVisitCount, // Using local count
+                    imageURL: nil, // Handled separately in view via myPhotoData
+                    isMe: true
+                )
+                
+                // 4. Combine and Sort (Highest score first)
+                entries.append(me)
+                entries.sort { $0.score > $1.score }
+                
+                // 5. Update UI
+                await MainActor.run {
+                    self.leaderboardEntries = entries
+                    self.isLoading = false
+                }
+                
+            } catch {
+                print("Failed to load leaderboard: \(error)")
+                // Even if fetch fails, show "Me"
+                let me = LeaderboardEntry(id: "me", name: myName, score: myVisitCount, imageURL: nil, isMe: true)
+                await MainActor.run {
+                    self.leaderboardEntries = [me]
+                    self.isLoading = false
+=======
             HStack {
                 Text("Rank")
                     .font(.caption)
@@ -286,6 +420,7 @@ struct LeaderboardView: View {
                 if index != friends.count - 1 {
                     Divider()
                         .padding(.leading, 30)
+>>>>>>> main
                 }
             }
         }
@@ -294,4 +429,5 @@ struct LeaderboardView: View {
 
 #Preview {
     AchievementsView(visitedLandmarks: .constant(["Niagara Falls", "Banff National Park"]))
+        .environmentObject(AuthService.shared) // Needed for preview
 }
