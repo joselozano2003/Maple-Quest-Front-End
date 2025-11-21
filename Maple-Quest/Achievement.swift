@@ -71,10 +71,10 @@ let allAchievements: [Achievement] = [
     ),
     Achievement(
         title: "True Canadian",
-        description: "Visit all 17 landmarks.",
+        description: "Visit all 18 landmarks.",
         iconName: "crown.fill",
         level: .platinum,
-        criteria: .visitCount(17)
+        criteria: .visitCount(18)
     ),
 
     // MARK: - BRONZE TIER (Accessible / Popular Spots)
@@ -206,5 +206,12 @@ let allAchievements: [Achievement] = [
         iconName: "graduationcap.fill",
         level: .platinum,
         criteria: .specificLandmark("University of Calgary")
+    ),
+    Achievement(
+        title: "Amazing Building History",
+        description: "Visit history McDougall Centre",
+        iconName: "building.columns.fill",
+        level: .gold,
+        criteria: .specificLandmark("McDougall Centre")
     )
 ]
