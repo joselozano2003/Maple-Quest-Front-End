@@ -17,6 +17,8 @@ struct CameraView: UIViewControllerRepresentable {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
         picker.sourceType = .camera
+        // If you want to allow cropping/editing, set this to true:
+        // picker.allowsEditing = true
         return picker
     }
     
@@ -36,11 +38,13 @@ struct CameraView: UIViewControllerRepresentable {
         }
         
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+            // FIX: Change .editedImage to .originalImage
+            if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
                 parent.image = image
             }
             parent.presentationMode.wrappedValue.dismiss()
         }
+        
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.presentationMode.wrappedValue.dismiss()
         }
