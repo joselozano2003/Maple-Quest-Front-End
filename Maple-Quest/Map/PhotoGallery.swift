@@ -22,6 +22,7 @@ struct PhotoGallery: View {
             Color(hex: "EAF6FF")
                 .ignoresSafeArea()
             VStack {
+                
                 // Scrollable grid of uploaded images per landmark
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 10) {
