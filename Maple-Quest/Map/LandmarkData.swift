@@ -8,6 +8,7 @@
 import CoreLocation
 import Foundation
 
+// Landmark data
 let landmarks: [Landmark] = [
     Landmark(
         name: "Niagara Falls",
