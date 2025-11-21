@@ -214,6 +214,26 @@ struct LeaderboardView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            HStack {
+                Text("Rank")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(width: 30, alignment: .leading)
+
+                Text("User")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 35)
+
+                Text("Landmarks")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(width: 80, alignment: .center)
+            }
+            .padding(.horizontal, 10)
+            .padding(.top, 2)
+            
             ForEach(Array(friends.enumerated()), id: \.element.id) { index, friend in
                 
                 // Check if this row represents the current user
@@ -252,6 +272,7 @@ struct LeaderboardView: View {
                         .padding(.vertical, 4)
                         .background(Color.red.opacity(0.2))
                         .cornerRadius(20)
+                        .frame(width: 80, alignment: .center)
                 }
                 .padding(.vertical, 8)
                 .padding(.horizontal, 10)
