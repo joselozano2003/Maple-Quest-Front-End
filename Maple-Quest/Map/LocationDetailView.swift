@@ -21,6 +21,9 @@ struct LocationDetailView: View {
     @State private var showPhotoGallery: Bool = false
     @State private var selectedImage: UIImage?
     @State private var showCamera: Bool = false
+    @State private var isUploadingImage = false
+    @State private var uploadError: String?
+    @State private var currentVisitId: Int?
     @Environment(\.dismiss) private var dismiss
     
     private var visitedLandmark: Bool {
@@ -74,7 +77,13 @@ struct LocationDetailView: View {
                 .navigationTitle("Gallery")
             }
             .onAppear {
+                // Load local images first
                 galleryImages = loadImages(for: landmark.name)
+                
+                // Then fetch from backend
+                Task {
+                    await loadImagesFromBackend()
+                }
             }
     }
     
@@ -168,6 +177,34 @@ struct LocationDetailView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    
+                    // Upload status indicator
+                    if isUploadingImage {
+                        HStack {
+                            ProgressView()
+                                .padding(.trailing, 8)
+                            Text("Uploading photo to S3...")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                        .padding()
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                    
+                    // Upload error
+                    if let error = uploadError {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.red)
+                            Text(error)
+                                .font(.subheadline)
+                                .foregroundColor(.red)
+                        }
+                        .padding()
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(8)
+                    }
                 }
                 .padding()
             }
@@ -206,10 +243,88 @@ struct LocationDetailView: View {
     }
     
     private func handlePhotoUpload(image: UIImage) {
+        // Add to local gallery immediately for UI feedback
         galleryImages.append(image)
         saveImages(galleryImages, for: landmark.name)
         onVisited(true)
+        
+        // Upload to S3 in the background
+        Task {
+            await uploadImageToS3(image)
+        }
+        
         showPhotoGallery = true
+    }
+    
+    private func uploadImageToS3(_ image: UIImage) async {
+        isUploadingImage = true
+        uploadError = nil
+        
+        print("🚀 Starting S3 upload for landmark: \(landmark.name)")
+        
+        do {
+            // First, upload the image to S3
+            print("📤 Uploading image to S3...")
+            let publicURL = try await ImageUploadService.shared.uploadImage(image)
+            print("✅ Image uploaded to S3: \(publicURL)")
+            
+            // Get the backend location ID
+            if currentVisitId == nil {
+                print("📍 Fetching backend location ID...")
+                
+                let locations = try await APIService.shared.getLocations()
+                guard let backendLocation = locations.first(where: { $0.name == landmark.name }) else {
+                    throw ImageUploadError.uploadFailed("Location not found in backend")
+                }
+                
+                print("📍 Creating/updating visit for location ID: \(backendLocation.location_id)")
+                
+                // Visit the location with the image
+                // This will either create a new visit or add to existing visit
+                let visitResponse = try await APIService.shared.visitLocation(
+                    locationId: backendLocation.location_id,
+                    note: "Visited \(landmark.name)",
+                    images: [["image_url": publicURL, "description": "Photo at \(landmark.name)"]]
+                )
+                currentVisitId = visitResponse.visit.id
+                print("✅ Visit ID: \(visitResponse.visit.id)")
+                print("✅ Points earned: \(visitResponse.points_earned)")
+            } else {
+                // We already have a visit, just add the image
+                print("📍 Adding image to existing visit ID: \(currentVisitId!)")
+                
+                let locations = try await APIService.shared.getLocations()
+                guard let backendLocation = locations.first(where: { $0.name == landmark.name }) else {
+                    throw ImageUploadError.uploadFailed("Location not found in backend")
+                }
+                
+                // Add image to existing visit
+                let visitResponse = try await APIService.shared.visitLocation(
+                    locationId: backendLocation.location_id,
+                    images: [["image_url": publicURL, "description": "Photo at \(landmark.name)"]]
+                )
+                print("✅ Image added to existing visit")
+            }
+            
+            // Save the image URL for future reference
+            saveImageURL(publicURL, for: landmark.name)
+            
+        } catch {
+            uploadError = error.localizedDescription
+            print("❌ Failed to upload image: \(error)")
+        }
+        
+        isUploadingImage = false
+    }
+    
+    private func saveImageURL(_ url: String, for landmarkName: String) {
+        var urls = loadImageURLs(for: landmarkName)
+        urls.append(url)
+        UserDefaults.standard.set(urls, forKey: "image_urls_\(landmarkName)")
+    }
+    
+    private func loadImageURLs(for landmarkName: String) -> [String] {
+        return UserDefaults.standard.stringArray(forKey: "image_urls_\(landmarkName)") ?? []
     }
     
     // This function now correctly receives a UIImage to delete
@@ -228,6 +343,95 @@ struct LocationDetailView: View {
             return []
         }
         return imageDataArray.compactMap { UIImage(data: $0) }
+    }
+    
+    private func loadImagesFromBackend() async {
+        // Loading backend images is optional - don't show errors to user
+        // Just log them for debugging
+        
+        print("📥 Loading images from backend for: \(landmark.name)")
+        
+        do {
+            // Get backend location ID
+            // Note: This endpoint should allow unauthenticated access
+            print("🔍 Fetching locations from backend...")
+            let locations = try await APIService.shared.getLocations()
+            
+            guard let backendLocation = locations.first(where: { $0.name == landmark.name }) else {
+                print("⚠️ Location '\(landmark.name)' not found in backend")
+                print("   Available locations: \(locations.map { $0.name }.joined(separator: ", "))")
+                return
+            }
+            
+            print("✅ Found backend location ID: \(backendLocation.location_id)")
+            
+            // Fetch images for this location
+            print("🔍 Fetching images for location...")
+            let locationImages = try await APIService.shared.getLocationImages(
+                locationId: backendLocation.location_id
+            )
+            
+            print("📥 Found \(locationImages.images.count) images from backend")
+            
+            if locationImages.images.isEmpty {
+                print("   No images to download")
+                return
+            }
+            
+            // Download and add images that aren't already in the gallery
+            for imageResponse in locationImages.images {
+
+                var imageURL = imageResponse.image_url
+                
+                guard let url = URL(string: imageURL) else {
+                    print("⚠️ Invalid image URL: \(imageURL)")
+                    continue
+                }
+                
+                // Check if we already have this image URL
+                let existingURLs = loadImageURLs(for: landmark.name)
+                if existingURLs.contains(imageResponse.image_url) {
+                    print("⏭️ Skipping already downloaded image")
+                    continue
+                }
+                
+                print("⬇️ Downloading image from: \(imageURL)")
+                
+                // Download the image with timeout
+                do {
+                    let (data, response) = try await URLSession.shared.data(from: url)
+                    
+                    guard let httpResponse = response as? HTTPURLResponse,
+                          httpResponse.statusCode == 200 else {
+                        print("⚠️ Failed to download image - HTTP \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+                        continue
+                    }
+                    
+                    guard let image = UIImage(data: data) else {
+                        print("⚠️ Failed to decode image data")
+                        continue
+                    }
+                    
+                    // Add to gallery if not already there
+                    await MainActor.run {
+                        galleryImages.append(image)
+                    }
+                    saveImageURL(imageResponse.image_url, for: landmark.name)
+                    print("✅ Downloaded and added image to gallery")
+                    
+                } catch {
+                    print("⚠️ Failed to download image: \(error.localizedDescription)")
+                }
+            }
+            
+        } catch APIError.httpError(let code, let message) {
+            print("❌ HTTP Error \(code) loading images: \(message ?? "Unknown error")")
+            if code == 401 {
+                print("   Note: This might be an authentication issue, but backend images are optional")
+            }
+        } catch {
+            print("❌ Failed to load images from backend: \(error)")
+        }
     }
 }
 
