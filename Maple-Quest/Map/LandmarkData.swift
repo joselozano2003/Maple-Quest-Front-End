@@ -77,7 +77,7 @@ let landmarks: [Landmark] = [
         name: "Peggy’s Cove Lighthouse",
         province: "Nova Scotia",
         description: "A beloved maritime icon set on rugged granite rocks along the Atlantic coast. The lighthouse sits beside a charming fishing village and draws visitors for its dramatic waves, coastal scenery, and classic East Coast charm.",
-        imageName: "peggysLightHouse",
+        imageName: "peggysLighthouse",
         location: CLLocationCoordinate2D(latitude: 44.491936206399686, longitude: -63.91859253025372),
         isVisited: false
     ),

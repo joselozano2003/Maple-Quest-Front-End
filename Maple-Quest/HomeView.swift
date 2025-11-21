@@ -197,6 +197,9 @@ struct HomeView: View {
                             .padding(.bottom)
                         }
                         .padding(.horizontal, -20)
+
+                        Color.clear
+                            .frame(height: 50)
                     }
                 }
                 .padding()
