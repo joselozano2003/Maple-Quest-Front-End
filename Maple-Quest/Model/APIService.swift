@@ -88,6 +88,12 @@ struct AchievementsListResponse: Codable {
     let count: Int?
 }
 
+// -- NEW STRUCT FOR POINTS SYNC --
+struct UpdatePointsResponse: Codable {
+    let message: String
+    let total_points: Int
+}
+
 // MARK: - Error Types
 
 enum APIError: LocalizedError {
@@ -189,6 +195,21 @@ class APIService {
             }
             throw APIError.decodingError(error)
         }
+    }
+    
+    // MARK: - NEW: Update Points
+    
+    /// Syncs the local point count to the backend (POST /api/users/update_points/)
+    func updatePoints(points: Int) async throws {
+        let body: [String: Any] = ["points": points]
+        
+        // We expect UpdatePointsResponse (or we can ignore the result if we just want it to work)
+        let _: UpdatePointsResponse = try await performRequest(
+            endpoint: "/api/users/update_points/",
+            method: "POST",
+            body: body
+        )
+        print("✅ Points synced to server: \(points)")
     }
 
     // MARK: - Friend Endpoints

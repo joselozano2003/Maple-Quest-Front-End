@@ -144,5 +144,13 @@ let landmarks: [Landmark] = [
         imageName: "montmorencyFalls",
         location: CLLocationCoordinate2D(latitude: 46.887937226029194, longitude: -71.14779067673727),
         isVisited: false
+    ),
+    Landmark(
+        name: "McDougall Centre",
+        province: "Alberta",
+        description: "A provincial government office and meeting space, this designated historic resource first opened its doors to students in 1907.",
+        imageName: "mccentre",
+        location: CLLocationCoordinate2D(latitude: 51.049496, longitude: -114.077365),
+        isVisited: false
     )
 ]

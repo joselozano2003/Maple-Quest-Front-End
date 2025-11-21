@@ -5,7 +5,6 @@
 //  Created by Jose Lozano on 10/6/25.
 //
 
-
 import SwiftUI
 
 struct ContentView: View {
@@ -33,20 +32,20 @@ struct ContentView: View {
                 
                 // Pass a binding to the visited landmarks array to the MapView
                 MapView(visitedLandmarks: $visitedLandmarks)
-                .tabItem {
-                    Label("Map", systemImage: "map.fill")
-                }
+                    .tabItem {
+                        Label("Map", systemImage: "map.fill")
+                    }
                 
                 // Pass a binding to the AchievementsView so it can check progress
                 AchievementsView(visitedLandmarks: $visitedLandmarks)
-                .tabItem {
-                    Label("Achievements", systemImage: "medal.fill")
-                }
+                    .tabItem {
+                        Label("Achievements", systemImage: "medal.fill")
+                    }
                 
                 ProfileView(user: .constant(currentUser))
-                .tabItem {
-                    Label("Profile", systemImage: "person.fill")
-                }
+                    .tabItem {
+                        Label("Profile", systemImage: "person.fill")
+                    }
             }
         }
         .tint(.red)
@@ -55,21 +54,49 @@ struct ContentView: View {
         .onAppear {
             loadVisitedLandmarks()
         }
-        .onChange(of: visitedLandmarks) { _, _ in
+        // --- SYNC LOGIC ---
+        .onChange(of: visitedLandmarks) { _, newLandmarks in
+            // 1. Save locally (so user sees it offline)
             saveVisitedLandmarks()
+            
+            // 2. Sync to Server (so friends see it on leaderboard)
+            Task {
+                do {
+                    // We send the count (e.g. 1, 5, 10) as the points
+                    try await APIService.shared.updatePoints(points: newLandmarks.count)
+                } catch {
+                    print("⚠️ Failed to sync points to server: \(error.localizedDescription)")
+                }
+            }
         }
+        // ------------------
     }
     
-    // The logic for saving and loading is now in this central view
+    // MARK: - Persistence Logic
+    
+    // Generates a unique key for the current user (e.g., "visitedLandmarks_john@email.com")
+    private var userDataKey: String {
+        guard let userId = authService.currentUser?.email else {
+            return "visitedLandmarks_guest"
+        }
+        return "visitedLandmarks_\(userId)"
+    }
+    
     func saveVisitedLandmarks() {
+        guard authService.currentUser != nil else { return }
+        
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(visitedLandmarks) {
-            UserDefaults.standard.set(encoded, forKey: "visitedLandmarks")
+            UserDefaults.standard.set(encoded, forKey: userDataKey)
         }
     }
     
     func loadVisitedLandmarks() {
-        if let savedData = UserDefaults.standard.data(forKey: "visitedLandmarks") {
+        // 1. Clear the list first to remove any data from a previous user
+        visitedLandmarks = []
+        
+        // 2. Load data specifically for this user
+        if let savedData = UserDefaults.standard.data(forKey: userDataKey) {
             let decoder = JSONDecoder()
             if let loaded = try? decoder.decode([String].self, from: savedData) {
                 visitedLandmarks = loaded
@@ -96,4 +123,5 @@ extension Color {
 
 #Preview {
     ContentView()
+        .environmentObject(AuthService.shared)
 }
