@@ -96,7 +96,7 @@ let allAchievements: [Achievement] = [
     Achievement(
         title: "Maritime Magic",
         description: "Visit Peggy’s Cove Lighthouse.",
-        iconName: "lighthouse.fill",
+        iconName: "sailboat.fill",
         level: .bronze,
         criteria: .specificLandmark("Peggy’s Cove Lighthouse")
     ),
