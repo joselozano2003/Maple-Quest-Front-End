@@ -4,9 +4,7 @@
 //
 //  Created by Matias
 //
-
 import SwiftUI
-
 // Helper struct to normalize data between "Me" (Local) and "Friends" (Backend)
 struct LeaderboardEntry: Identifiable {
     let id: String
@@ -15,7 +13,6 @@ struct LeaderboardEntry: Identifiable {
     let imageURL: String?
     let isMe: Bool
 }
-
 struct AchievementsView: View {
     @Binding var visitedLandmarks: [String]
     @EnvironmentObject var authService: AuthService // Need this to get "My" name/photo
@@ -138,16 +135,7 @@ struct AchievementsView: View {
         }
     }
 }
-
-func medalForRank(_ rank: Int) -> String? {
-    switch rank {
-    case 1: return "🥇"
-    case 2: return "🥈"
-    case 3: return "🥉"
-    default: return nil
-    }
-}
-
+// MARK: - Subviews
 struct AchievementCard: View {
     let achievement: Achievement
     let isUnlocked: Bool
@@ -219,7 +207,6 @@ struct AchievementCard: View {
         .opacity(isUnlocked ? 1.0 : 0.8)
     }
 }
-
 struct LeaderboardView: View {
     let myVisitCount: Int
     let myName: String
@@ -227,10 +214,8 @@ struct LeaderboardView: View {
     
     @State private var leaderboardEntries: [LeaderboardEntry] = []
     @State private var isLoading = true
-
     var body: some View {
         VStack(spacing: 12) {
-<<<<<<< HEAD
             if isLoading {
                 HStack {
                     Spacer()
@@ -249,7 +234,6 @@ struct LeaderboardView: View {
                             .font(.headline)
                             .foregroundColor(.secondary)
                             .frame(width: 20)
-
                         // Profile Image (Handles both URL and Local Data)
                         Group {
                             if entry.isMe, let data = myPhotoData, let uiImage = UIImage(data: data) {
@@ -273,7 +257,6 @@ struct LeaderboardView: View {
                         }
                         .frame(width: 30, height: 30)
                         .clipShape(Circle())
-
                         // Name
                         Text(entry.isMe ? "You" : entry.name)
                             .font(.headline)
@@ -347,87 +330,14 @@ struct LeaderboardView: View {
                 await MainActor.run {
                     self.leaderboardEntries = [me]
                     self.isLoading = false
-=======
-            HStack {
-                Text("Rank")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .frame(width: 30, alignment: .leading)
-
-                Text("User")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 35)
-
-                Text("Landmarks")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .frame(width: 80, alignment: .center)
-            }
-            .padding(.horizontal, 10)
-            .padding(.top, 2)
-            
-            ForEach(Array(friends.enumerated()), id: \.element.id) { index, friend in
-                
-                // Check if this row represents the current user
-                let isMe = (friend.name == "You (John)")
-                let score = isMe ? myVisitCount : friend.visitedCount
-                
-                HStack(spacing: 12) {
-                    Text("\(index + 1)")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                        .frame(width: 20)
-
-                    Image(systemName: friend.profileImage)
-                        .font(.title2)
-                        .foregroundColor(.red)
-                        .frame(width: 30)
-
-                    // Name + Medal beside it
-                    HStack(spacing: 6) {
-                        Text(isMe ? "You" : friend.name)
-                            .font(.headline)
-                            .fontWeight(isMe ? .bold : .regular)
-
-                        if let medal = medalForRank(index + 1) {
-                            Text(medal)
-                                .font(.headline)
-                        }
-                    }
-
-                    Spacer()
-
-                    Text("\(score)")
-                        .font(.system(.body, design: .monospaced))
-                        .fontWeight(.bold)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(Color.red.opacity(0.2))
-                        .cornerRadius(20)
-                        .frame(width: 80, alignment: .center)
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 10)
-                .frame(maxWidth: .infinity)
-                .background(
-                    isMe
-                    ? Color(.systemGray5).opacity(0.6)
-                    : Color.white
-                )
-                .cornerRadius(10)
-                if index != friends.count - 1 {
-                    Divider()
-                        .padding(.leading, 30)
->>>>>>> main
                 }
             }
         }
     }
 }
-
 #Preview {
     AchievementsView(visitedLandmarks: .constant(["Niagara Falls", "Banff National Park"]))
         .environmentObject(AuthService.shared) // Needed for preview
 }
+
+
