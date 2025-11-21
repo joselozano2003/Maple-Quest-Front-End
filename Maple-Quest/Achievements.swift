@@ -64,6 +64,15 @@ struct AchievementsView: View {
 }
 
 // --- NEW LEADERBOARD VIEW ---
+func medalForRank(_ rank: Int) -> String? {
+    switch rank {
+    case 1: return "🥇"
+    case 2: return "🥈"
+    case 3: return "🥉"
+    default: return nil
+    }
+}
+
 struct LeaderboardView: View {
     
     // Get the user's real count
@@ -90,23 +99,40 @@ struct LeaderboardView: View {
 
                     Image(systemName: friend.profileImage)
                         .font(.title2)
-                        .foregroundColor(isMe ? .red : .blue)
+                        .foregroundColor(.red)
                         .frame(width: 30)
 
-                    Text(isMe ? "You" : friend.name)
-                        .font(.headline)
-                        .fontWeight(isMe ? .bold : .regular)
-                    
+                    // Name + Medal beside it
+                    HStack(spacing: 6) {
+                        Text(isMe ? "You" : friend.name)
+                            .font(.headline)
+                            .fontWeight(isMe ? .bold : .regular)
+
+                        if let medal = medalForRank(index + 1) {
+                            Text(medal)
+                                .font(.headline)
+                        }
+                    }
+
                     Spacer()
-                    
+
                     Text("\(score)")
                         .font(.title3)
                         .fontWeight(.semibold)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
-                        .background(isMe ? Color.red.opacity(0.2) : Color.blue.opacity(0.2))
+                        .background(Color.red.opacity(0.2))
                         .cornerRadius(20)
                 }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 10)
+                .frame(maxWidth: .infinity)
+                .background(
+                    isMe
+                    ? Color(.systemGray5).opacity(0.6)
+                    : Color.white
+                )
+                .cornerRadius(10)
                 if index != friends.count - 1 {
                     Divider()
                 }
