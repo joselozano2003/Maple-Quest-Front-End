@@ -122,46 +122,66 @@ struct LandmarkListView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 12) {
-                    
-                    // Displays each landmark as a card
-                    ForEach(filteredLandmarks) { landmark in
-                        HStack(spacing: 12) {
-                            
-                            // Thumbnail image
-                            Image(landmark.imageName)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 80, height: 60)
-                                .cornerRadius(10)
-                                .shadow(radius: 2)
-                            
-                            // Landmark name and province where its located
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(landmark.name)
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Text(landmark.province)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            // Distinguishes which landmarks have been visited
-                            Image(systemName: visitedLandmarks.contains(landmark.name) ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(visitedLandmarks.contains(landmark.name) ? .red : .gray)
-                        }
-                        .padding(8)
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
+                
+                // Displays text when no landmarks have been visited yet
+                if filteredLandmarks.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "mappin.circle")
+                            .font(.system(size: 40))
+                            .foregroundColor(.red)
+                            .padding(.top, 50)
+
+                        Text(filter == .visited ? "You haven't visited any landmarks yet" : "No landmarks found")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                            .padding(.vertical, 20)
                     }
+                    .frame(maxWidth: .infinity)
+                } else {
+                    VStack(spacing: 12) {
+                        
+                        // Displays each landmark as card
+                        ForEach(filteredLandmarks) { landmark in
+                            HStack(spacing: 12) {
+                                
+                                // Thumbnail image
+                                Image(landmark.imageName)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 80, height: 60)
+                                    .cornerRadius(10)
+                                    .shadow(radius: 2)
+                                
+                                // Landmark name and province where its located
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(landmark.name)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Text(landmark.province)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+
+                                Spacer()
+                                
+                                // Distinguishes which landmarks have been visited
+                                Image(systemName: visitedLandmarks.contains(landmark.name) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(visitedLandmarks.contains(landmark.name) ? .red : .gray)
+                            }
+                            .padding(8)
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
+                        }
+                    }
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle(filterTitle())
             .toolbar {
+                
                 // Landmark filter
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
