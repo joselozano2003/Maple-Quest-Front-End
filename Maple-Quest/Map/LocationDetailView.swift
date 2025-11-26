@@ -172,6 +172,7 @@ struct LocationDetailView: View {
                     // Landmark description
                     Text("Details")
                         .font(.title2).bold()
+                        .foregroundColor(.black)
                     Text(landmark.description)
                         .font(.system(size: 17))
                         .foregroundColor(.black.opacity(0.6))
@@ -186,7 +187,7 @@ struct LocationDetailView: View {
                                 .foregroundColor(isUserNearby ? .green : .red)
                             Text(isUserNearby ? "You are here! You can add photos." : "You are \(String(format: "%.2f", distance / 1000)) km away. Get closer to add photos.")
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.black.opacity(0.6))
                         }
                     } else {
                         HStack {
