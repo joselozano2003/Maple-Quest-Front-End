@@ -48,9 +48,7 @@ struct ProfileView: View {
                         Text(user.fullName)
                             .font(.title2)
                             .fontWeight(.semibold)
-//                        Text(user.email)
-//                            .foregroundColor(.gray)
-//                            .font(.subheadline)
+                            .foregroundColor(.black)
                     }
                     
                     // Profile Actions
@@ -62,21 +60,23 @@ struct ProfileView: View {
                             HStack {
                                 Label("Friends", systemImage: "person.2.fill")
                                     .fontWeight(.medium)
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.black)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .foregroundColor(.gray)
                             }
                             .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            )
                         }
                     }
                     .padding(.horizontal)
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        ProfileField(title: "Location", value: $user.location)
+                        ProfileField(title: "Location", value: $user.location).foregroundColor(.black)
                         ProfileField(title: "Email", value:
-                            $user.email)
+                                        $user.email).foregroundColor(.black)
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Mobile Number")
                                 .font(.subheadline)
@@ -84,11 +84,15 @@ struct ProfileView: View {
                             HStack {
                                 Text(user.phoneCode)
                                     .fontWeight(.medium)
+                                    .foregroundColor(.black)
                                 Text(user.phoneNumber)
+                                    .foregroundColor(.black)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            )
                         }
                     }
                     .padding(.horizontal)
@@ -106,16 +110,23 @@ struct ProfileView: View {
                                 Spacer()
                             }
                             .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            )
                         }
                     }
                     .padding(.horizontal)
                 }
                 .padding(.bottom, 32)
             }
-            .navigationTitle("Profile")
+            .background(Color.white)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Profile")
+                        .font(.headline)
+                        .foregroundColor(.black)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Edit") { isEditing = true }
                 }
@@ -139,7 +150,9 @@ struct ProfileField: View {
             TextField("", text: $value)
                 .disabled(true)
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                .background(RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                )
         }
     }
 }
