@@ -79,17 +79,12 @@ struct MapView: View {
                 
             }
             .fullScreenCover(isPresented: $isListSelected) {
-                ZStack {
-                    Color.white
-                        .ignoresSafeArea()
-                    LandmarkListView(
-                        isPresented: $isListSelected,
-                        visitedLandmarks: visitedLandmarks,
-                        allLandmarks: landmarks
-                    )
-                }
+                LandmarkListView(
+                    isPresented: $isListSelected,
+                    visitedLandmarks: visitedLandmarks,
+                    allLandmarks: landmarks
+                )
             }
-
         }
     }
 }
@@ -131,6 +126,15 @@ struct LandmarkListView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
+                VStack(alignment: .leading) {
+                    Text(filterTitle())
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 16)
+                        .padding(.bottom, 8)
+                }
                 
                 // Displays text when no landmarks have been visited yet
                 if filteredLandmarks.isEmpty {
@@ -167,10 +171,10 @@ struct LandmarkListView: View {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(landmark.name)
                                         .font(.headline)
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(.black)
                                     Text(landmark.province)
                                         .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.gray)
                                 }
 
                                 Spacer()
@@ -188,7 +192,7 @@ struct LandmarkListView: View {
                     .padding()
                 }
             }
-            .navigationTitle(filterTitle())
+            .background(.white)
             .toolbar {
                 
                 // Landmark filter
