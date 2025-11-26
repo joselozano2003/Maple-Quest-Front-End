@@ -132,7 +132,12 @@ struct ProfileView: View {
                 }
             }
             .sheet(isPresented: $isEditing) {
-                EditProfileView(user: $user)
+                ZStack {
+                    Color.white
+                        .ignoresSafeArea()
+                    
+                    EditProfileView(user: $user)
+                }
             }
         }
     }
@@ -201,7 +206,9 @@ struct EditProfileView: View {
                         PhotosPicker(selection: $photoItem, matching: .images, photoLibrary: .shared()) {
                             Image(systemName: "camera.fill")
                                 .padding(8)
-                                .background(Circle().fill(Color(.systemGray5)))
+                                .background(RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                                )
                         }
                     }
                     .padding(.top, 16)
@@ -218,12 +225,13 @@ struct EditProfileView: View {
                     Text(user.firstName)
                         .font(.title2)
                         .fontWeight(.semibold)
+                        .foregroundColor(.black)
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        EditableField(title: "First Name", text: $user.firstName)
-                        EditableField(title: "Last Name", text: $user.lastName)
-                        EditableField(title: "Email", text: $user.email)
-                        EditableField(title: "Location", text: $user.location)
+                        EditableField(title: "First Name", text: $user.firstName).foregroundColor(.black)
+                        EditableField(title: "Last Name", text: $user.lastName).foregroundColor(.black)
+                        EditableField(title: "Email", text: $user.email).foregroundColor(.black)
+                        EditableField(title: "Location", text: $user.location).foregroundColor(.black)
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Mobile Number")
@@ -245,12 +253,14 @@ struct EditProfileView: View {
                                     .frame(height: 30)
                                     .padding(.horizontal, 4)
 
-                                TextField("Phone Number", text: $user.phoneNumber)
+                                TextField("Phone Number", text: $user.phoneNumber).foregroundColor(.black)
                                     .keyboardType(.numberPad)
                                     .padding(.leading, 2)
                             }
                             .frame(height: 40)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            )
                         }
                     }
                     .padding(.horizontal)
@@ -262,6 +272,7 @@ struct EditProfileView: View {
                     Text("Edit Profile")
                         .font(.headline)
                         .fontWeight(.semibold)
+                        .foregroundColor(.black)
                         .padding(.top, 2)
                         .frame(maxWidth: .infinity)
                 }
@@ -281,7 +292,6 @@ struct EditProfileView: View {
                             }
                         }
                     }
-                    .fontWeight(.bold)
                     .disabled(isSaving)
                 }
                 
@@ -319,7 +329,9 @@ struct EditableField: View {
                 .foregroundColor(.gray)
             TextField(title, text: $text)
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                .background(RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                )
         }
     }
 }
