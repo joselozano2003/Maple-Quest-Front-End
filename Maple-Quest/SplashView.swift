@@ -16,6 +16,7 @@ struct SplashView: View {
                         .font(.title)
                         .fontWeight(.bold)
                         .offset(x: -40)
+                        .foregroundColor(.black)
                     Text("Quest")
                         .font(.largeTitle)
                         .fontWeight(.bold)
@@ -34,7 +35,7 @@ struct SplashView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
+        .background(Color(.white))
     }
 }
 
