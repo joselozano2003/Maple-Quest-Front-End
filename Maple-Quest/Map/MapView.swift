@@ -71,14 +71,23 @@ struct MapView: View {
                 }
             }
             .sheet(isPresented: $isInfoSelected) {
-                InfoSheetView(isPresented: $isInfoSelected)
+                ZStack {
+                    Color.white
+                        .ignoresSafeArea()
+                    InfoSheetView(isPresented: $isInfoSelected)
+                }
+                
             }
             .fullScreenCover(isPresented: $isListSelected) {
-                LandmarkListView(
-                    isPresented: $isListSelected,
-                    visitedLandmarks: visitedLandmarks,
-                    allLandmarks: landmarks
-                )
+                ZStack {
+                    Color.white
+                        .ignoresSafeArea()
+                    LandmarkListView(
+                        isPresented: $isListSelected,
+                        visitedLandmarks: visitedLandmarks,
+                        allLandmarks: landmarks
+                    )
+                }
             }
 
         }
@@ -133,7 +142,7 @@ struct LandmarkListView: View {
 
                         Text(filter == .visited ? "You haven't visited any landmarks yet" : "No landmarks found")
                             .font(.headline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                             .padding(.vertical, 20)
@@ -242,8 +251,15 @@ struct InfoSheetView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    Text("Instructions")
+                        .foregroundColor(.black)
+                        .font(.largeTitle)
+                        .bold()
+                        .padding(.top, 30)
+                    
                     Text("How the Map Works")
                         .font(.title2)
+                        .foregroundColor(.black)
                         .bold()
                         .padding(.bottom, 8)
                     
@@ -252,6 +268,7 @@ struct InfoSheetView: View {
                         ForEach(bullets, id: \.self) { bullet in
                             Text(bullet)
                                 .font(.body)
+                                .foregroundColor(.black)
                                 .multilineTextAlignment(.leading)
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -263,7 +280,6 @@ struct InfoSheetView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Instructions")
             .toolbar {
                 
                 // Button to close the information page
