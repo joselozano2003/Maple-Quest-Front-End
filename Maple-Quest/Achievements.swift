@@ -37,6 +37,15 @@ struct AchievementsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
+                    VStack(alignment: .leading) {
+                        Text("Achievements")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, 16)
+                            .padding(.bottom, 8)
+                    }
                     
                     // --- LEADERBOARD SECTION ---
                     VStack(alignment: .leading) {
@@ -106,7 +115,6 @@ struct AchievementsView: View {
                 .padding()
             }
             .background(Color(hex: "EAF6FF"))
-            .navigationTitle("Achievements")
         }
     }
     
