@@ -33,46 +33,77 @@ struct RegisterView: View {
                     Text("Create Account")
                         .font(.title)
                         .fontWeight(.bold)
+                        .foregroundColor(.black)
                     
                     Text("Join the adventure!")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                 }
                 .padding(.bottom, 30)
                 
                 // Registration Form
                 VStack(spacing: 16) {
-                    TextField("First Name (Optional)", text: $firstName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.words)
+                    TextField("", text: $firstName, prompt: Text("First Name (Optional)").foregroundColor(.gray))
+                        .padding(12)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
+                        .accentColor(.black)
                         .padding(.horizontal)
                     
-                    TextField("Last Name (Optional)", text: $lastName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.words)
+                    TextField("", text: $lastName, prompt: Text("Last Name (Optional)").foregroundColor(.gray))
+                        .padding(12)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
+                        .accentColor(.black)
                         .padding(.horizontal)
                     
-                    TextField("Email", text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
+                    TextField("", text: $email, prompt: Text("Email").foregroundColor(.gray))
+                        .padding(12)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
+                        .accentColor(.black)
                         .padding(.horizontal)
                     
-                    TextField("Phone Number (Optional)", text: $phoneNumber)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("", text: $phoneNumber, prompt: Text("Phone Number (Optional)").foregroundColor(.gray))
+                        .padding(12)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
+                        .accentColor(.black)
                         .keyboardType(.phonePad)
                         .padding(.horizontal)
                     
                     ZStack(alignment: .trailing) {
                         Group {
                             if showPassword {
-                                TextField("Password", text: $password)
+                                TextField("", text: $password, prompt: Text("Password").foregroundColor(.gray))
                             } else {
-                                SecureField("Password", text: $password)
+                                SecureField("", text: $password, prompt: Text("Password").foregroundColor(.gray))
                             }
                         }
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(12)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
+                        .accentColor(.black)
                         .padding(.horizontal)
                         
                         Button(action: { showPassword.toggle() }) {
@@ -86,12 +117,20 @@ struct RegisterView: View {
                     ZStack(alignment: .trailing) {
                         Group {
                             if showConfirmPassword {
-                                TextField("Confirm Password", text: $confirmPassword)
+                                TextField("", text: $confirmPassword, prompt: Text("Confirm Password").foregroundColor(.gray))
                             } else {
-                                SecureField("Confirm Password", text: $confirmPassword)
+                                SecureField("", text: $confirmPassword, prompt: Text("Confirm Password").foregroundColor(.gray))
                             }
+                            
                         }
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(12)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
+                        .accentColor(.black)
                         .padding(.horizontal)
                         
                         Button(action: { showConfirmPassword.toggle() }) {
@@ -151,6 +190,7 @@ struct RegisterView: View {
                 Spacer()
             }
             .padding()
+            .background(Color.white)
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -161,6 +201,7 @@ struct RegisterView: View {
                 }
             }
         }
+        
         .onChange(of: authService.isAuthenticated) { _, isAuthenticated in
             if isAuthenticated {
                 dismiss()
