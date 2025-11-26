@@ -88,7 +88,13 @@ struct LocationDetailView: View {
                 PhotoGallery(images: $galleryImages) { imageToDelete in
                     deleteImage(imageToDelete)
                 }
-                .navigationTitle("Gallery")
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Gallery")
+                            .foregroundColor(.black)
+                            .bold()
+                    }
+                }
             }
         
             // Displays images uploaded in the gallery to each landmark
