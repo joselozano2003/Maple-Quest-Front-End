@@ -34,6 +34,18 @@ struct HomeView: View {
             .map { $0.0 }
     }
     
+    // Top 5 most visited landmarks array
+    private var topFiveLandmarks: [Landmark] {
+        let names = [
+            "Niagara Falls",
+            "Banff National Park",
+            "CN Tower",
+            "Château Frontenac",
+            "Notre-Dame Basilica of Montreal"
+        ]
+        return landmarks.filter { names.contains($0.name)}
+    }
+    
     var body: some View {
         ZStack {
             Color(hex: "EAF6FF")
@@ -168,7 +180,7 @@ struct HomeView: View {
                         // Highlights Carousel
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 20) {
-                                ForEach(landmarks) { landmark in
+                                ForEach(topFiveLandmarks) { landmark in
                                     NavigationLink {
                                         LocationDetailView(
                                             landmark: landmark,
