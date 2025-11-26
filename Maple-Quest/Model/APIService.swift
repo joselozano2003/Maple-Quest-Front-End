@@ -49,8 +49,9 @@ struct LocationVisitResponse: Codable {
     let message: String
     let visit: VisitResponse
     let images: [ImageResponse]?
-    let points_earned: Int
-    let total_points: Int
+    let images_added: [ImageResponse]?
+    let points_earned: Int?
+    let total_points: Int?
 }
 
 // Image-Related
