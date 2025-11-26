@@ -25,17 +25,40 @@ struct LoginView: View {
                 Spacer()
                 
                 VStack(spacing: 20) {
-                    Text("Maple Quest")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
+                    VStack{
+                        
+                        Text("Maple")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .offset(x: -40)
+                            .foregroundColor(.black)
+                        Text("Quest")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                            .offset(x: 25)
+                    }
+                    .padding(.bottom, -150)
                     
-                    Text("Login")
+                    Image("splashIcon")
+                        .resizable()
+                        .scaledToFit()
+                        .scaleEffect(0.55)
+                        .offset(x: 10, y: -90)
+                        .padding(.bottom, -160)
+                
+                    Text("Sign in").bold()
                         .font(.title2)
-                        .padding(.top, 10)
+                        .foregroundColor(Color.black.opacity(0.7))
 
-                    TextField("Email", text: $username)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("", text: $username, prompt: Text("Email").foregroundColor(.gray))
+                        .padding(10)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
@@ -44,12 +67,18 @@ struct LoginView: View {
                     ZStack(alignment: .trailing) {
                         Group {
                             if showPassword {
-                                TextField("Password", text: $password)
+                                TextField("", text: $password, prompt: Text("Password").foregroundColor(.gray))
                             } else {
-                                SecureField("Password", text: $password)
+                                SecureField("", text: $password, prompt: Text("Password").foregroundColor(.gray))
                             }
                         }
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(10)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
                         .padding(.horizontal)
                         
                         Button(action: { showPassword.toggle() }) {
@@ -104,6 +133,7 @@ struct LoginView: View {
                 
                 Spacer()
             }
+            .background(.white)
         }
     }
 }
