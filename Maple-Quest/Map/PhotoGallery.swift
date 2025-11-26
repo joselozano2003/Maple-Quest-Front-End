@@ -61,7 +61,7 @@ struct PhotoGallery: View {
                 if isEditing && images.count == 1 {
                     Text("You must keep at least one photo.")
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.black)
                         .padding(20)
                 }
             }
