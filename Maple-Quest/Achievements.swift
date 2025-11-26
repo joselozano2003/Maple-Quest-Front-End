@@ -4,6 +4,7 @@
 //
 //  Created by Matias
 //
+
 import SwiftUI
 // Helper struct to normalize data between "Me" (Local) and "Friends" (Backend)
 struct LeaderboardEntry: Identifiable {
@@ -43,6 +44,7 @@ struct AchievementsView: View {
                             Text("Leaderboard")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                                .foregroundColor(.black)
                             Image(systemName: "trophy.fill")
                                 .foregroundColor(.yellow)
                         }
@@ -64,6 +66,7 @@ struct AchievementsView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             Text("Unlocked")
                                 .font(.title2)
+                                .foregroundColor(.black)
                                 .fontWeight(.bold)
                             
                             ForEach(unlockedAchievements) { achievement in
@@ -82,6 +85,7 @@ struct AchievementsView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             Text("Next Milestones")
                                 .font(.title2)
+                                .foregroundColor(.black)
                                 .fontWeight(.bold)
                                 .opacity(0.8)
                             
@@ -159,7 +163,7 @@ struct AchievementCard: View {
                 HStack {
                     Text(achievement.title)
                         .font(.headline)
-                        .foregroundColor(isUnlocked ? .primary : .gray)
+                        .foregroundColor(isUnlocked ? .black : .gray)
                     
                     Spacer()
                     
@@ -171,7 +175,7 @@ struct AchievementCard: View {
                 
                 Text(achievement.description)
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.gray)
                     .lineLimit(2)
                 
                 // Progress Bar
@@ -194,7 +198,7 @@ struct AchievementCard: View {
                     
                     Text(progressLabel)
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                         .frame(width: 60, alignment: .trailing)
                 }
             }
@@ -226,13 +230,14 @@ struct LeaderboardView: View {
             } else if leaderboardEntries.isEmpty {
                 // This shouldn't happen because "You" are always an entry
                 Text("No data available")
+                    .foregroundColor(.black)
             } else {
                 ForEach(Array(leaderboardEntries.enumerated()), id: \.element.id) { index, entry in
                     HStack(spacing: 12) {
                         // Rank Number
                         Text("\(index + 1)")
                             .font(.headline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.black)
                             .frame(width: 20)
                         // Profile Image (Handles both URL and Local Data)
                         Group {
@@ -261,13 +266,14 @@ struct LeaderboardView: View {
                         Text(entry.isMe ? "You" : entry.name)
                             .font(.headline)
                             .fontWeight(entry.isMe ? .bold : .regular)
-                            .foregroundColor(entry.isMe ? .primary : .secondary)
+                            .foregroundColor(entry.isMe ? .black : .gray)
                         
                         Spacer()
                         
                         // Score
                         Text("\(entry.score)")
                             .font(.system(.body, design: .monospaced))
+                            .foregroundColor(.black.opacity(0.7))
                             .fontWeight(.bold)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 4)
