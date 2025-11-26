@@ -23,7 +23,7 @@ struct AddFriendView: View {
             VStack(spacing: 20) {
                 Text("Search for a friend by their registered Email or Phone Number.")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.gray)
                     .padding(.horizontal)
                     .multilineTextAlignment(.center)
                 
@@ -32,13 +32,18 @@ struct AddFriendView: View {
                     Text("Phone Number").tag(SearchType.phone)
                 }
                 .pickerStyle(.segmented)
+                .background(Color(red: 242/255, green: 242/255, blue: 247/255))
                 .padding(.horizontal)
                 
-                TextField(searchType.placeholder, text: $input)
+                TextField("", text: $input, prompt: Text(searchType.placeholder).foregroundColor(.gray))
                     .keyboardType(searchType.keyboardType)
                     .autocapitalization(searchType == .email ? .none : .words)
                     .disableAutocorrection(searchType == .email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                    )
                     .padding(.horizontal)
                 
                 Button(action: sendRequest) {
@@ -70,9 +75,13 @@ struct AddFriendView: View {
                 Spacer()
             }
             .padding(.top, 20)
-            .navigationTitle("Add Friend")
+            .background(Color.white)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Add Friend")
+                        .foregroundColor(.black)
+                }
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
@@ -101,10 +110,6 @@ struct AddFriendView: View {
                 isSuccess = true
                 // Notify FriendsView to reload data
                 onFriendAdded()
-                
-                // Optional: Auto-dismiss after delay if successful
-                // try? await Task.sleep(nanoseconds: 1_500_000_000)
-                // dismiss()
                 
             } catch {
                 statusMessage = "Failed to send request: \(error.localizedDescription)"
