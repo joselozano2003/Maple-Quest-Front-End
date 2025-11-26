@@ -78,6 +78,9 @@ struct PhotoGallery: View {
             }
         }
         
+        // Hides the back button during editing
+        .navigationBarBackButtonHidden(isEditing)
+        
         // Makes the image bigger when you click on it
         .fullScreenCover(isPresented: .constant(selectedImage != nil)) {
             if let img = selectedImage {
