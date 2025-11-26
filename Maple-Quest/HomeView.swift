@@ -52,6 +52,7 @@ struct HomeView: View {
                     VStack(alignment: .leading) {
                         ZStack {
                             Text("Explore")
+                                .foregroundColor(.black)
                             Image("cloud")
                                 .resizable()
                                 .scaledToFit()
@@ -60,7 +61,9 @@ struct HomeView: View {
                         }
                         HStack {
                             Text("Beautiful").bold()
-                            Text("Canada!").bold().foregroundColor(.red)
+                                .foregroundColor(.black)
+                            Text("Canada!").bold()
+                                .foregroundColor(.red)
                             Image("maple-leaf-icon")
                                 .resizable()
                                 .scaledToFit()
@@ -77,11 +80,12 @@ struct HomeView: View {
                             Text("Welcome, \(user.firstName)!")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                                .foregroundColor(.black)
                             
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Your Progress: \(visitedCount) of \(landmarks.count) landmarks visited")
                                     .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.gray)
                                 
                                 ProgressView(value: progress)
                                     .progressViewStyle(LinearProgressViewStyle(tint: .red))
@@ -100,6 +104,7 @@ struct HomeView: View {
                                 .foregroundColor(.red)
                             Text("Explore Landmarks Near You")
                                 .font(.system(size: 22)).bold()
+                                .foregroundColor(.black)
                         }
                         .padding(.top)
                         
@@ -117,10 +122,10 @@ struct HomeView: View {
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(landmark.name)
                                             .font(.headline)
-                                            .foregroundColor(.primary)
+                                            .foregroundColor(.black)
                                         Text(landmark.province)
                                             .font(.subheadline)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.gray)
                                         
                                         if let userLocation = locationManager.userLocation {
                                             let distance = Int(
@@ -156,6 +161,7 @@ struct HomeView: View {
                                 .foregroundColor(.red)
                             Text("Highlights")
                                 .font(.system(size: 22)).bold()
+                                .foregroundColor(.black)
                         }
                         .padding(.top)
                         
@@ -184,11 +190,11 @@ struct HomeView: View {
                                             
                                             Text(landmark.name)
                                                 .font(.headline)
-                                                .foregroundColor(.primary)
+                                                .foregroundColor(.black)
                                             
                                             Text(landmark.province)
                                                 .font(.subheadline)
-                                                .foregroundColor(.secondary)
+                                                .foregroundColor(.gray)
                                         }
                                     }
                                 }
