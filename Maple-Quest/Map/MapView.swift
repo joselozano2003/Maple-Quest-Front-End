@@ -304,5 +304,6 @@ struct InfoSheetView: View {
     // The preview needs a constant binding and a location manager to work
     MapView(visitedLandmarks: .constant([]))
         .environmentObject(LocationManager())
+        .environmentObject(AuthService.shared)
 }
 

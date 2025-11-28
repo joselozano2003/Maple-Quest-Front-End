@@ -7,11 +7,5 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to see which landmarks you are visiting.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>We need camera access so you can take photos of landmarks.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to save your travel photos to your gallery.</string>
 </dict>
 </plist>
