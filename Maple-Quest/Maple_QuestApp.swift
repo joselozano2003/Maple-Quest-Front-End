@@ -10,18 +10,29 @@ import SwiftUI
 @main
 struct Maple_QuestApp: App {
     @StateObject private var authService = AuthService.shared
-    
+    @State private var showSplash = true
+
     var body: some Scene {
         WindowGroup {
-            Group {
-                if !authService.isInitialized {
+            ZStack {
+                if showSplash {
                     SplashView()
-                } else if authService.isAuthenticated {
-                    ContentView()
-                        .environmentObject(authService)
+                        .transition(.opacity)
                 } else {
-                    LoginView()
-                        .environmentObject(authService)
+                    if authService.isAuthenticated {
+                        ContentView()
+                            .environmentObject(authService)
+                    } else {
+                        LoginView()
+                            .environmentObject(authService)
+                    }
+                }
+            }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation {
+                        showSplash = false
+                    }
                 }
             }
         }

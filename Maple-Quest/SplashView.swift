@@ -31,6 +31,7 @@ struct SplashView: View {
                 
                 ProgressView()
                     .scaleEffect(1.2)
+                    .progressViewStyle(CircularProgressViewStyle(tint: .black))
                     .padding(.top, -60)
             }
         }
