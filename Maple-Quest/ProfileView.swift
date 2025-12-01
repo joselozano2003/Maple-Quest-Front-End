@@ -139,6 +139,22 @@ struct ProfileView: View {
                     EditProfileView(user: $user)
                 }
             }
+            .onAppear {
+                Task {
+                    await authService.fetchProfile()
+                    if let updatedUser = authService.currentUser {
+                        user = updatedUser
+                    }
+                }
+            }
+            .onAppear {
+                Task {
+                    await authService.fetchProfile()
+                    if let updatedUser = authService.currentUser {
+                        user = updatedUser
+                    }
+                }
+            }
         }
     }
 }
@@ -167,15 +183,86 @@ struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var authService: AuthService
     
+    @State private var firstName: String
+    @State private var lastName: String
+    @State private var email: String
+    @State private var location: String
+    @State private var phoneCode: String
+    @State private var phoneNumber: String
+    
     @State private var selectedImage: UIImage?
     @State private var photoItem: PhotosPickerItem?
     @State private var isSaving = false
+    @State private var hasImageChanged = false
     
     init(user: Binding<User>) {
         self._user = user
+        
+        // Initialize local state with user values
+        self._firstName = State(initialValue: user.wrappedValue.firstName)
+        self._lastName = State(initialValue: user.wrappedValue.lastName)
+        self._email = State(initialValue: user.wrappedValue.email)
+        self._location = State(initialValue: user.wrappedValue.location)
+        self._phoneCode = State(initialValue: user.wrappedValue.phoneCode)
+        self._phoneNumber = State(initialValue: user.wrappedValue.phoneNumber)
+        
         if let data = user.wrappedValue.profileImageData,
            let uiImage = UIImage(data: data) {
             self._selectedImage = State(initialValue: uiImage)
+        }
+    }
+    
+    private func saveProfile() async {
+        isSaving = true
+        
+        print("💾 Starting profile save...")
+        print("   Current firstName: \(firstName)")
+        print("   Current lastName: \(lastName)")
+        print("   Current phoneNumber: \(phoneNumber)")
+        
+        var profilePicUrl: String? = nil
+        
+        // Upload profile picture if changed
+        if hasImageChanged, let image = selectedImage {
+            print("📸 Uploading profile picture...")
+            do {
+                profilePicUrl = try await ImageUploadService.shared.uploadImage(image)
+                print("✅ Profile picture uploaded: \(profilePicUrl ?? "")")
+            } catch {
+                print("❌ Failed to upload profile picture: \(error)")
+                // Continue with profile update even if image upload fails
+            }
+        } else {
+            print("⏭️ No profile picture change")
+        }
+        
+        // Save profile changes to backend
+        print("📡 Calling authService.updateProfile...")
+        let success = await authService.updateProfile(
+            firstName: firstName.isEmpty ? nil : firstName,
+            lastName: lastName.isEmpty ? nil : lastName,
+            phoneNumber: phoneNumber.isEmpty ? nil : phoneNumber,
+            profilePicUrl: profilePicUrl
+        )
+        
+        isSaving = false
+        if success {
+            print("✅ Profile updated successfully, dismissing sheet")
+            
+            // Update the binding with new values
+            user.firstName = firstName
+            user.lastName = lastName
+            user.email = email
+            user.location = location
+            user.phoneCode = phoneCode
+            user.phoneNumber = phoneNumber
+            
+            dismiss()
+        } else {
+            print("❌ Profile update failed")
+            if let error = authService.errorMessage {
+                print("   Error: \(error)")
+            }
         }
     }
 
@@ -218,20 +305,21 @@ struct EditProfileView: View {
                                let uiImage = UIImage(data: data) {
                                 selectedImage = uiImage
                                 user.profileImageData = data
+                                hasImageChanged = true
                             }
                         }
                     }
                     
-                    Text(user.firstName)
+                    Text(firstName)
                         .font(.title2)
                         .fontWeight(.semibold)
                         .foregroundColor(.black)
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        EditableField(title: "First Name", text: $user.firstName).foregroundColor(.black)
-                        EditableField(title: "Last Name", text: $user.lastName).foregroundColor(.black)
-                        EditableField(title: "Email", text: $user.email).foregroundColor(.black)
-                        EditableField(title: "Location", text: $user.location).foregroundColor(.black)
+                        EditableField(title: "First Name", text: $firstName).foregroundColor(.black)
+                        EditableField(title: "Last Name", text: $lastName).foregroundColor(.black)
+                        EditableField(title: "Email", text: $email).foregroundColor(.black)
+                        EditableField(title: "Location", text: $location).foregroundColor(.black)
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Mobile Number")
@@ -239,7 +327,7 @@ struct EditProfileView: View {
                                 .foregroundColor(.gray)
 
                             HStack {
-                                Picker("", selection: $user.phoneCode) {
+                                Picker("", selection: $phoneCode) {
                                     ForEach(phoneCodes, id: \.self) { code in
                                         Text(code).tag(code)
                                     }
@@ -253,7 +341,7 @@ struct EditProfileView: View {
                                     .frame(height: 30)
                                     .padding(.horizontal, 4)
 
-                                TextField("Phone Number", text: $user.phoneNumber).foregroundColor(.black)
+                                TextField("Phone Number", text: $phoneNumber).foregroundColor(.black)
                                     .keyboardType(.numberPad)
                                     .padding(.leading, 2)
                             }
@@ -279,19 +367,10 @@ struct EditProfileView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         Task {
-                            isSaving = true
-                            // Save profile changes to backend
-                            let success = await authService.updateProfile(
-                                firstName: user.firstName.isEmpty ? nil : user.firstName,
-                                lastName: user.lastName.isEmpty ? nil : user.lastName,
-                                phoneNumber: user.phoneNumber.isEmpty ? nil : user.phoneNumber
-                            )
-                            isSaving = false
-                            if success {
-                                dismiss()
-                            }
+                            await saveProfile()
                         }
                     }
+                    .fontWeight(.bold)
                     .disabled(isSaving)
                 }
                 
