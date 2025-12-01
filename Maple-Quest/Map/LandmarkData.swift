@@ -153,5 +153,262 @@ let landmarks: [Landmark] = [
         imageName: "mccentre",
         location: CLLocationCoordinate2D(latitude: 51.049496, longitude: -114.077365),
         isVisited: false
+    ),
+    Landmark(
+        name: "Moraine Lake",
+        province: "Alberta",
+        description: "This glacier-fed lake features unreal bright-blue water surrounded by the Valley of the Ten Peaks. It’s a bucket-list sunrise spot and one of Canada’s most iconic views.",
+        imageName: "moraineLake",
+        location: CLLocationCoordinate2D(latitude: 51.328239, longitude: -116.181717),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Old Quebec",
+        province: "Quebec",
+        description: "A UNESCO World Heritage Site known for its European charm and cobblestone streets. The fortified walls make it the only walled city north of Mexico.",
+        imageName: "oldQuebec",
+        location: CLLocationCoordinate2D(latitude: 46.812182, longitude: -71.206493),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Whistler",
+        province: "British Columbia",
+        description: "A top global ski destination with year-round hiking, biking, and sightseeing. The PEAK 2 PEAK Gondola links Whistler and Blackcomb mountains with epic views.",
+        imageName: "whistler",
+        location: CLLocationCoordinate2D(latitude: 50.116322, longitude: -122.957359),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Cabot Trail",
+        province: "Nova Scotia",
+        description: "A scenic coastal drive looping around Cape Breton Island. Known for whale watching, dramatic cliffs, and autumn foliage.",
+        imageName: "cabotTrail",
+        location: CLLocationCoordinate2D(latitude: 46.486942, longitude: -60.746113),
+        isVisited: false
+    ),
+
+    Landmark(
+        name: "Gros Morne National Park",
+        province: "Newfoundland and Labrador",
+        description: "A UNESCO site showcasing fjords, cliffs, and rare geology. The Western Brook Pond fjord is a bucket-list cruise.",
+        imageName: "grosMorne",
+        location: CLLocationCoordinate2D(latitude: 49.6870, longitude: -57.7360),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Churchill",
+        province: "Manitoba",
+        description: "Known as the polar bear capital of the world. It’s also one of the best places to see beluga whales and the Northern Lights.",
+        imageName: "churchill",
+        location: CLLocationCoordinate2D(latitude: 58.768410, longitude: -94.164963),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Prince Edward Island National Park",
+        province: "Prince Edward Island",
+        description: "Home to red-sand beaches, dunes, and Anne of Green Gables heritage sites. Perfect for cycling or relaxing seaside.",
+        imageName: "peiPark",
+        location: CLLocationCoordinate2D(latitude: 46.4550, longitude: -62.8500),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Mont Tremblant",
+        province: "Quebec",
+        description: "A charming ski resort village with strong European vibes. Popular for skiing, hiking, and spa getaways.",
+        imageName: "montTremblant",
+        location: CLLocationCoordinate2D(latitude: 46.1183, longitude: -74.5965),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Vancouver Seawall",
+        province: "British Columbia",
+        description: "The world’s longest uninterrupted waterfront path. Perfect for biking past beaches, forests, and city skyline views.",
+        imageName: "vancouverSeawall",
+        location: CLLocationCoordinate2D(latitude: 49.3043, longitude: -123.1443),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Thousand Islands",
+        province: "Ontario",
+        description: "An archipelago of over 1,800 islands scattered along the St. Lawrence River. Boat tours reveal mansions, castles, and crystal-clear waters.",
+        imageName: "thousandIslands",
+        location: CLLocationCoordinate2D(latitude: 44.3540, longitude: -75.8969),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Haida Gwaii",
+        province: "British Columbia",
+        description: "A remote archipelago known for Indigenous Haida culture and untouched landscapes. Its ancient totems and mossy forests feel almost mythical.",
+        imageName: "haidaGwaii",
+        location: CLLocationCoordinate2D(latitude: 53.2537, longitude: -132.0457),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Tofino",
+        province: "British Columbia",
+        description: "A laid-back surf town surrounded by rainforest and beaches. Perfect for surfing, storm watching, and relaxing hot springs.",
+        imageName: "tofino",
+        location: CLLocationCoordinate2D(latitude: 49.1520, longitude: -125.9050),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Kananaskis Country",
+        province: "Alberta",
+        description: "Often overshadowed by Banff, it offers equally stunning mountains with fewer crowds. Ideal for hiking, wildlife sightings, and serenity.",
+        imageName: "kananaskis",
+        location: CLLocationCoordinate2D(latitude: 50.8860, longitude: -115.0667),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Waterton Lakes National Park",
+        province: "Alberta",
+        description: "A lesser-known national park joining Glacier National Park across the U.S. border. Its lake views, red canyon, and Prince of Wales Hotel are stunning.",
+        imageName: "waterton",
+        location: CLLocationCoordinate2D(latitude: 49.0833, longitude: -113.9167),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Nahanni National Park",
+        province: "Northwest Territories",
+        description: "A remote UNESCO site known for deep canyons and Virginia Falls—twice the height of Niagara. Accessible mainly by floatplane, making it a true adventure.",
+        imageName: "nahanni",
+        location: CLLocationCoordinate2D(latitude: 61.0000, longitude: -124.5000),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Fogo Island",
+        province: "Newfoundland and Labrador",
+        description: "A rugged island with modern art retreats and coastal hikes. The Fogo Island Inn is world-renowned for its architecture.",
+        imageName: "fogoIsland",
+        location: CLLocationCoordinate2D(latitude: 49.6670, longitude: -54.2100),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Athabasca Sand Dunes",
+        province: "Saskatchewan",
+        description: "The world’s northernmost sand dunes, stretching up to 30 metres high. A surreal desert-like landscape in the middle of Canada’s wilderness.",
+        imageName: "athabascaDunes",
+        location: CLLocationCoordinate2D(latitude: 59.08326157208747, longitude: -109.0699118801578),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Manitoulin Island",
+        province: "Ontario",
+        description: "The world's largest freshwater island. Its Indigenous culture and crystal-clear lakes make it peaceful and unique.",
+        imageName: "manitoulinIsland",
+        location: CLLocationCoordinate2D(latitude: 45.8220, longitude: -82.3400),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Dinosaur Provincial Park",
+        province: "Alberta",
+        description: "A badlands area rich in fossils and hoodoos. Over 50 dinosaur species have been discovered here.",
+        imageName: "dinosaurPark",
+        location: CLLocationCoordinate2D(latitude: 50.6985, longitude: -112.2595),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Whitehorse & Miles Canyon",
+        province: "Yukon",
+        description: "Bright green waters run between dramatic basalt cliffs. It’s a beautiful and quiet spot just minutes from the city.",
+        imageName: "milesCanyon",
+        location: CLLocationCoordinate2D(latitude: 60.6400, longitude: -135.0860),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Cape Spear",
+        province: "Newfoundland and Labrador",
+        description: "The easternmost point in North America. Visitors can catch the continent’s first sunrise and explore WWII bunkers.",
+        imageName: "capeSpear",
+        location: CLLocationCoordinate2D(latitude: 47.5235, longitude: -52.6231),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Spirit Island",
+        province: "Alberta",
+        description: "An iconic, secluded island surrounded by towering peaks. Accessible only by boat, it’s one of the most picturesque places in the Rockies.",
+        imageName: "spiritIsland",
+        location: CLLocationCoordinate2D(latitude: 52.7290, longitude: -117.6480),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Cape Bonavista Lighthouse",
+        province: "Newfoundland and Labrador",
+        description: "A historic lighthouse set on dramatic sea cliffs overlooking the Atlantic. Visitors can climb the restored 1843 tower, watch puffins, and spot passing icebergs in spring.",
+        imageName: "capeBonavista",
+        location: CLLocationCoordinate2D(latitude: 48.6494, longitude: -53.1125),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Mount Carleton Provincial Park",
+        province: "New Brunswick",
+        description: "Remote highland wilderness containing the highest peak in the Maritime Provinces, offering hiking, lakes, forested hills — a quiet wilderness escape.",
+        imageName: "mountCarleton",
+        location: CLLocationCoordinate2D(latitude: 47.4065, longitude: -66.8185),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Percé Rock",
+        province: "Québec",
+        description: "A massive limestone rock formation rising from the sea off the tip of the Gaspé Peninsula — one of the world’s largest natural sea‑arches and a symbol of Quebec’s coastal wilderness.",
+        imageName: "perceRock",
+        location: CLLocationCoordinate2D(latitude: 48.6360, longitude: -64.2130),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Mingan Archipelago",
+        province: "Québec",
+        description: "A chain of limestone islands and sea‑stacks carved by wind and waves along the Gulf of St. Lawrence — surreal coastal scenery, great for kayaking, bird‑watching, and remote camping.",
+        imageName: "minganArchipelago",
+        location: CLLocationCoordinate2D(latitude: 50.2790, longitude: -63.6130),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Grasslands National Park",
+        province: "Saskatchewan",
+        description: "Sweeping prairie landscapes, wide open skies, native grassland, and chances to see bison, pronghorn and other wildlife — a tranquil, underappreciated prairie wilderness.",
+        imageName: "grasslandsNationalPark",
+        location: CLLocationCoordinate2D(latitude: 49.9670, longitude: -107.4500),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Tombstone Territorial Park",
+        province: "Yukon",
+        description: "Jagged peaks, tundra landscapes and remote northern wilderness — often dubbed \"Canada’s Patagonia.\" Great for multi‑day treks, wildlife viewing and seeing tundra flora, especially spectacular in fall when colours explode.",
+        imageName: "tombstoneTerritorialPark",
+        location: CLLocationCoordinate2D(latitude: 63.0000, longitude: -137.0000),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Wasson Bluff",
+        province: "Nova Scotia",
+        description: "A series of sandstone and basalt cliffs along the Minas Basin that preserve fossils from the Triassic–Jurassic boundary, offering a rare glimpse into ancient life and dramatic tide‑shaped geology.",
+        imageName: "wassonBluff",
+        location: CLLocationCoordinate2D(latitude: 45.4150, longitude: -64.2420),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Paskapoo Slopes",
+        province: "Alberta",
+        description: "A natural sandstone escarpment and ravine‑cut slopes on Calgary’s western edge, formed by glacial lakes and erosion — a quiet but striking geological feature near urban Alberta.",
+        imageName: "paskapooSlopes",
+        location: CLLocationCoordinate2D(latitude: 51.0333, longitude: -114.1667),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Port Renfrew",
+        province: "British Columbia",
+        description: "On Vancouver Island’s rugged west coast — wild beaches, old‑growth forest, tide‑pools, and proximity to ancient giants in nearby groves. Great for those wanting remote coastlines minus the crowds.",
+        imageName: "portRenfrew",
+        location: CLLocationCoordinate2D(latitude: 48.5500, longitude: -124.5667),
+        isVisited: false
+    ),
+    Landmark(
+        name: "Galiano Island",
+        province: "British Columbia",
+        description: "A quieter member of the Southern Gulf Islands — a laid‑back, artsy island with coastal trails, kayaking, local galleries and a relaxed island‑life vibe close to Vancouver.",
+        imageName: "galianoIsland",
+        location: CLLocationCoordinate2D(latitude: 49.4490, longitude: -123.3790),
+        isVisited: false
     )
 ]
