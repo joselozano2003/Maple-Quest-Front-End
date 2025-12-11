@@ -16,6 +16,7 @@ struct SplashView: View {
                         .font(.title)
                         .fontWeight(.bold)
                         .offset(x: -40)
+                        .foregroundColor(.black)
                     Text("Quest")
                         .font(.largeTitle)
                         .fontWeight(.bold)
@@ -30,11 +31,12 @@ struct SplashView: View {
                 
                 ProgressView()
                     .scaleEffect(1.2)
+                    .progressViewStyle(CircularProgressViewStyle(tint: .black))
                     .padding(.top, -60)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
+        .background(Color(.white))
     }
 }
 

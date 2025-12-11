@@ -7,6 +7,7 @@
 
 import CoreLocation
 
+// Model representing a Canadian landmark
 struct Landmark: Identifiable, Hashable, Equatable {
     var id = UUID().uuidString
     var name: String

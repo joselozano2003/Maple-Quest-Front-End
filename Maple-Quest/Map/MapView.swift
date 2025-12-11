@@ -9,23 +9,26 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
+    
+    // Variables
     @Binding var visitedLandmarks: [String]
     @EnvironmentObject var locationManager: LocationManager
-    
-    // Center map on Canada
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 56.1304, longitude: -106.3468),
         span: MKCoordinateSpan(latitudeDelta: 20, longitudeDelta: 20)
-    )
-    
+    ) // Centers the map around Canada
     @State private var isInfoSelected: Bool = false
     @State private var isListSelected: Bool = false
     
+    // View
     var body: some View {
         NavigationStack {
             Map {
                 ForEach(landmarks) { landmark in
                     Annotation(landmark.name, coordinate: landmark.location) {
+                        
+                        // Click on a map pin to navigate to the detail screen
+                        // Update the visited list if the landmark gets marked as visited.
                         NavigationLink {
                             LocationDetailView(landmark: landmark, userLocation: locationManager.userLocation) { visited in
                                 if visited && !visitedLandmarks.contains(landmark.name) {
@@ -42,9 +45,13 @@ struct MapView: View {
                     }
                 }
             }
+            
+            // Button to navigate to the user's current location
             .mapControls {
                 MapUserLocationButton()
             }
+            
+            // Information and landmark list view buttons
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -64,7 +71,12 @@ struct MapView: View {
                 }
             }
             .sheet(isPresented: $isInfoSelected) {
-                InfoSheetView(isPresented: $isInfoSelected)
+                ZStack {
+                    Color.white
+                        .ignoresSafeArea()
+                    InfoSheetView(isPresented: $isInfoSelected)
+                }
+                
             }
             .fullScreenCover(isPresented: $isListSelected) {
                 LandmarkListView(
@@ -73,11 +85,11 @@ struct MapView: View {
                     allLandmarks: landmarks
                 )
             }
-
         }
     }
 }
 
+// Function to filter landmarks in list view
 enum LandmarkFilter: String, CaseIterable {
     case all = "All Landmarks"
     case visited = "Visited Landmarks"
@@ -93,11 +105,11 @@ enum LandmarkFilter: String, CaseIterable {
 }
 
 struct LandmarkListView: View {
-    @Binding var isPresented: Bool
     
+    // Variables
+    @Binding var isPresented: Bool
     var visitedLandmarks: [String]
     var allLandmarks: [Landmark]
-    
     @State private var filter: LandmarkFilter = .all
     var filteredLandmarks: [Landmark] {
         switch filter {
@@ -110,45 +122,80 @@ struct LandmarkListView: View {
         }
     }
 
-    
+    // View
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 12) {
-                    // Combine visited and unvisited landmarks
-                    ForEach(filteredLandmarks) { landmark in
-                        HStack(spacing: 12) {
-                            Image(landmark.imageName)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 80, height: 60)
-                                .cornerRadius(10)
-                                .shadow(radius: 2)
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(landmark.name)
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Text(landmark.province)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            Image(systemName: visitedLandmarks.contains(landmark.name) ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(visitedLandmarks.contains(landmark.name) ? .red : .gray)
-                        }
-                        .padding(8)
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
-                    }
+                VStack(alignment: .leading) {
+                    Text(filterTitle())
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 16)
+                        .padding(.bottom, 8)
                 }
-                .padding()
+                
+                // Displays text when no landmarks have been visited yet
+                if filteredLandmarks.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "mappin.circle")
+                            .font(.system(size: 40))
+                            .foregroundColor(.red)
+                            .padding(.top, 50)
+
+                        Text(filter == .visited ? "You haven't visited any landmarks yet" : "No landmarks found")
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                            .padding(.vertical, 20)
+                    }
+                    .frame(maxWidth: .infinity)
+                } else {
+                    VStack(spacing: 12) {
+                        
+                        // Displays each landmark as card
+                        ForEach(filteredLandmarks) { landmark in
+                            HStack(spacing: 12) {
+                                
+                                // Thumbnail image
+                                Image(landmark.imageName)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 80, height: 60)
+                                    .cornerRadius(10)
+                                    .shadow(radius: 2)
+                                
+                                // Landmark name and province where its located
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(landmark.name)
+                                        .font(.headline)
+                                        .foregroundColor(.black)
+                                    Text(landmark.province)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+
+                                Spacer()
+                                
+                                // Distinguishes which landmarks have been visited
+                                Image(systemName: visitedLandmarks.contains(landmark.name) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(visitedLandmarks.contains(landmark.name) ? .red : .gray)
+                            }
+                            .padding(8)
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
+                        }
+                    }
+                    .padding()
+                }
             }
-            .navigationTitle(filterTitle())
+            .background(.white)
             .toolbar {
+                
+                // Landmark filter
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         ForEach(LandmarkFilter.allCases, id: \.self) { option in
@@ -168,6 +215,8 @@ struct LandmarkListView: View {
                             .foregroundColor(.red)
                     }
                 }
+                
+                // Button to close landmark list view
                 ToolbarItem(placement: .bottomBar) {
                     Button("Done") {
                         isPresented = false
@@ -179,6 +228,7 @@ struct LandmarkListView: View {
         }
     }
     
+    // Filter titles
     func filterTitle() -> String {
         switch filter {
             case .all: return "All Landmarks"
@@ -189,8 +239,9 @@ struct LandmarkListView: View {
 }
 
 struct InfoSheetView: View {
-    @Binding var isPresented: Bool
     
+    // Variables
+    @Binding var isPresented: Bool
     private let bullets = [
         "Explore popular Canadian landmarks marked with maple leaf pins!",
         "White maple leaves = landmarks waiting for you to discover, red maple leaves = landmarks you’ve already visited.",
@@ -199,19 +250,29 @@ struct InfoSheetView: View {
         "Use the gallery button to see all the photos you’ve captured at that landmark – your personal travel scrapbook!"
     ]
     
+    // View
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    Text("Instructions")
+                        .foregroundColor(.black)
+                        .font(.largeTitle)
+                        .bold()
+                        .padding(.top, 30)
+                    
                     Text("How the Map Works")
                         .font(.title2)
+                        .foregroundColor(.black)
                         .bold()
                         .padding(.bottom, 8)
                     
+                    // Bullet points for some guidelines on how the map works
                     VStack(spacing: 16) {
                         ForEach(bullets, id: \.self) { bullet in
                             Text(bullet)
                                 .font(.body)
+                                .foregroundColor(.black)
                                 .multilineTextAlignment(.leading)
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -223,8 +284,9 @@ struct InfoSheetView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Instructions")
             .toolbar {
+                
+                // Button to close the information page
                 ToolbarItem(placement: .bottomBar) {
                     Button("Got it!") {
                         isPresented = false
@@ -242,5 +304,6 @@ struct InfoSheetView: View {
     // The preview needs a constant binding and a location manager to work
     MapView(visitedLandmarks: .constant([]))
         .environmentObject(LocationManager())
+        .environmentObject(AuthService.shared)
 }
 

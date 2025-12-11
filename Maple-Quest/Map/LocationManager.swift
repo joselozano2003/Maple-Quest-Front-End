@@ -9,11 +9,13 @@ import Foundation
 import CoreLocation
 import Combine
 
+// Handles all user location updates & permissions for the app
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    private let manager = CLLocationManager()
     
-    @Published var userLocation: CLLocationCoordinate2D? // The published user location
-    @Published var authorizationStatus: CLAuthorizationStatus? // Optional: track permission
+    // Variables
+    private let manager = CLLocationManager()
+    @Published var userLocation: CLLocationCoordinate2D?
+    @Published var authorizationStatus: CLAuthorizationStatus?
     
     override init() {
         super.init()
@@ -35,7 +37,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         userLocation = locations.first?.coordinate
     }
     
-    // Optional: handle errors
+    // Handle errors
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location error: \(error.localizedDescription)")
     }

@@ -48,9 +48,7 @@ struct ProfileView: View {
                         Text(user.fullName)
                             .font(.title2)
                             .fontWeight(.semibold)
-//                        Text(user.email)
-//                            .foregroundColor(.gray)
-//                            .font(.subheadline)
+                            .foregroundColor(.black)
                     }
                     
                     // Profile Actions
@@ -62,21 +60,23 @@ struct ProfileView: View {
                             HStack {
                                 Label("Friends", systemImage: "person.2.fill")
                                     .fontWeight(.medium)
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.black)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .foregroundColor(.gray)
                             }
                             .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            )
                         }
                     }
                     .padding(.horizontal)
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        ProfileField(title: "Location", value: $user.location)
+                        ProfileField(title: "Location", value: $user.location).foregroundColor(.black)
                         ProfileField(title: "Email", value:
-                            $user.email)
+                                        $user.email).foregroundColor(.black)
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Mobile Number")
                                 .font(.subheadline)
@@ -84,11 +84,15 @@ struct ProfileView: View {
                             HStack {
                                 Text(user.phoneCode)
                                     .fontWeight(.medium)
+                                    .foregroundColor(.black)
                                 Text(user.phoneNumber)
+                                    .foregroundColor(.black)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            )
                         }
                     }
                     .padding(.horizontal)
@@ -106,22 +110,50 @@ struct ProfileView: View {
                                 Spacer()
                             }
                             .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            )
                         }
                     }
                     .padding(.horizontal)
                 }
                 .padding(.bottom, 32)
             }
-            .navigationTitle("Profile")
+            .background(Color.white)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Profile")
+                        .font(.headline)
+                        .foregroundColor(.black)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Edit") { isEditing = true }
                 }
             }
             .sheet(isPresented: $isEditing) {
-                EditProfileView(user: $user)
+                ZStack {
+                    Color.white
+                        .ignoresSafeArea()
+                    
+                    EditProfileView(user: $user)
+                }
+            }
+            .onAppear {
+                Task {
+                    await authService.fetchProfile()
+                    if let updatedUser = authService.currentUser {
+                        user = updatedUser
+                    }
+                }
+            }
+            .onAppear {
+                Task {
+                    await authService.fetchProfile()
+                    if let updatedUser = authService.currentUser {
+                        user = updatedUser
+                    }
+                }
             }
         }
     }
@@ -139,7 +171,9 @@ struct ProfileField: View {
             TextField("", text: $value)
                 .disabled(true)
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                .background(RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                )
         }
     }
 }
@@ -149,15 +183,86 @@ struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var authService: AuthService
     
+    @State private var firstName: String
+    @State private var lastName: String
+    @State private var email: String
+    @State private var location: String
+    @State private var phoneCode: String
+    @State private var phoneNumber: String
+    
     @State private var selectedImage: UIImage?
     @State private var photoItem: PhotosPickerItem?
     @State private var isSaving = false
+    @State private var hasImageChanged = false
     
     init(user: Binding<User>) {
         self._user = user
+        
+        // Initialize local state with user values
+        self._firstName = State(initialValue: user.wrappedValue.firstName)
+        self._lastName = State(initialValue: user.wrappedValue.lastName)
+        self._email = State(initialValue: user.wrappedValue.email)
+        self._location = State(initialValue: user.wrappedValue.location)
+        self._phoneCode = State(initialValue: user.wrappedValue.phoneCode)
+        self._phoneNumber = State(initialValue: user.wrappedValue.phoneNumber)
+        
         if let data = user.wrappedValue.profileImageData,
            let uiImage = UIImage(data: data) {
             self._selectedImage = State(initialValue: uiImage)
+        }
+    }
+    
+    private func saveProfile() async {
+        isSaving = true
+        
+        print("💾 Starting profile save...")
+        print("   Current firstName: \(firstName)")
+        print("   Current lastName: \(lastName)")
+        print("   Current phoneNumber: \(phoneNumber)")
+        
+        var profilePicUrl: String? = nil
+        
+        // Upload profile picture if changed
+        if hasImageChanged, let image = selectedImage {
+            print("📸 Uploading profile picture...")
+            do {
+                profilePicUrl = try await ImageUploadService.shared.uploadImage(image)
+                print("✅ Profile picture uploaded: \(profilePicUrl ?? "")")
+            } catch {
+                print("❌ Failed to upload profile picture: \(error)")
+                // Continue with profile update even if image upload fails
+            }
+        } else {
+            print("⏭️ No profile picture change")
+        }
+        
+        // Save profile changes to backend
+        print("📡 Calling authService.updateProfile...")
+        let success = await authService.updateProfile(
+            firstName: firstName.isEmpty ? nil : firstName,
+            lastName: lastName.isEmpty ? nil : lastName,
+            phoneNumber: phoneNumber.isEmpty ? nil : phoneNumber,
+            profilePicUrl: profilePicUrl
+        )
+        
+        isSaving = false
+        if success {
+            print("✅ Profile updated successfully, dismissing sheet")
+            
+            // Update the binding with new values
+            user.firstName = firstName
+            user.lastName = lastName
+            user.email = email
+            user.location = location
+            user.phoneCode = phoneCode
+            user.phoneNumber = phoneNumber
+            
+            dismiss()
+        } else {
+            print("❌ Profile update failed")
+            if let error = authService.errorMessage {
+                print("   Error: \(error)")
+            }
         }
     }
 
@@ -188,7 +293,9 @@ struct EditProfileView: View {
                         PhotosPicker(selection: $photoItem, matching: .images, photoLibrary: .shared()) {
                             Image(systemName: "camera.fill")
                                 .padding(8)
-                                .background(Circle().fill(Color(.systemGray5)))
+                                .background(RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                                )
                         }
                     }
                     .padding(.top, 16)
@@ -198,19 +305,21 @@ struct EditProfileView: View {
                                let uiImage = UIImage(data: data) {
                                 selectedImage = uiImage
                                 user.profileImageData = data
+                                hasImageChanged = true
                             }
                         }
                     }
                     
-                    Text(user.firstName)
+                    Text(firstName)
                         .font(.title2)
                         .fontWeight(.semibold)
+                        .foregroundColor(.black)
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        EditableField(title: "First Name", text: $user.firstName)
-                        EditableField(title: "Last Name", text: $user.lastName)
-                        EditableField(title: "Email", text: $user.email)
-                        EditableField(title: "Location", text: $user.location)
+                        EditableField(title: "First Name", text: $firstName).foregroundColor(.black)
+                        EditableField(title: "Last Name", text: $lastName).foregroundColor(.black)
+                        EditableField(title: "Email", text: $email).foregroundColor(.black)
+                        EditableField(title: "Location", text: $location).foregroundColor(.black)
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Mobile Number")
@@ -218,7 +327,7 @@ struct EditProfileView: View {
                                 .foregroundColor(.gray)
 
                             HStack {
-                                Picker("", selection: $user.phoneCode) {
+                                Picker("", selection: $phoneCode) {
                                     ForEach(phoneCodes, id: \.self) { code in
                                         Text(code).tag(code)
                                     }
@@ -232,12 +341,14 @@ struct EditProfileView: View {
                                     .frame(height: 30)
                                     .padding(.horizontal, 4)
 
-                                TextField("Phone Number", text: $user.phoneNumber)
+                                TextField("Phone Number", text: $phoneNumber).foregroundColor(.black)
                                     .keyboardType(.numberPad)
                                     .padding(.leading, 2)
                             }
                             .frame(height: 40)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            )
                         }
                     }
                     .padding(.horizontal)
@@ -249,23 +360,14 @@ struct EditProfileView: View {
                     Text("Edit Profile")
                         .font(.headline)
                         .fontWeight(.semibold)
+                        .foregroundColor(.black)
                         .padding(.top, 2)
                         .frame(maxWidth: .infinity)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         Task {
-                            isSaving = true
-                            // Save profile changes to backend
-                            let success = await authService.updateProfile(
-                                firstName: user.firstName.isEmpty ? nil : user.firstName,
-                                lastName: user.lastName.isEmpty ? nil : user.lastName,
-                                phoneNumber: user.phoneNumber.isEmpty ? nil : user.phoneNumber
-                            )
-                            isSaving = false
-                            if success {
-                                dismiss()
-                            }
+                            await saveProfile()
                         }
                     }
                     .fontWeight(.bold)
@@ -306,7 +408,9 @@ struct EditableField: View {
                 .foregroundColor(.gray)
             TextField(title, text: $text)
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                .background(RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(red: 242/255, green: 242/255, blue: 247/255))
+                )
         }
     }
 }

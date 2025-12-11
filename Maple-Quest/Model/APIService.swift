@@ -49,8 +49,9 @@ struct LocationVisitResponse: Codable {
     let message: String
     let visit: VisitResponse
     let images: [ImageResponse]?
-    let points_earned: Int
-    let total_points: Int
+    let images_added: [ImageResponse]?
+    let points_earned: Int?
+    let total_points: Int?
 }
 
 // Image-Related
@@ -165,9 +166,9 @@ class APIService {
                 throw APIError.unauthorized
             }
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            print("🔐 Auth: Sending request WITH authentication to \(endpoint)")
+            print("Auth: Sending request WITH authentication to \(endpoint)")
         } else {
-            print("🔓 Auth: Sending request WITHOUT authentication to \(endpoint)")
+            print("Auth: Sending request WITHOUT authentication to \(endpoint)")
         }
 
         if let body = body {
@@ -209,7 +210,7 @@ class APIService {
             method: "POST",
             body: body
         )
-        print("✅ Points synced to server: \(points)")
+        print("Points synced to server: \(points)")
     }
 
     // MARK: - Friend Endpoints
@@ -372,4 +373,5 @@ class APIService {
         )
         return response.results
     }
+    
 }

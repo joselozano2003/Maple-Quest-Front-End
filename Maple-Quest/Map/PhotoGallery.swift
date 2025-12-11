@@ -8,18 +8,22 @@
 import SwiftUI
 
 struct PhotoGallery: View {
+    
+    // Variables
     let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     @Binding var images: [UIImage]
-    // This closure will be called when the user taps the delete button on an image
     var onDelete: (UIImage) -> Void
     @State private var selectedImage: UIImage? = nil
     @State private var isEditing = false
     
+    // View
     var body: some View {
         ZStack {
             Color(hex: "EAF6FF")
                 .ignoresSafeArea()
             VStack {
+                
+                // Scrollable grid of uploaded images per landmark
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 10) {
                         ForEach(images, id: \.self) { image in
@@ -34,6 +38,7 @@ struct PhotoGallery: View {
                                         selectedImage = image
                                     }
                                 
+                                // Deleting an image is only possible when there is more than one image in the landmark gallery
                                 if isEditing && images.count > 1 {
                                     Button(action: {
                                         onDelete(image)
@@ -52,13 +57,16 @@ struct PhotoGallery: View {
                     .padding()
                 }
                 
+                // Image cannot be deleted when there is only one image in the landmark gallery
                 if isEditing && images.count == 1 {
                     Text("You must keep at least one photo.")
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.black)
                         .padding(20)
                 }
             }
+            
+            // Edit button for deleting images
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(isEditing ? "Done" : "Edit") {
@@ -69,6 +77,11 @@ struct PhotoGallery: View {
                 }
             }
         }
+        
+        // Hides the back button during editing
+        .navigationBarBackButtonHidden(isEditing)
+        
+        // Makes the image bigger when you click on it
         .fullScreenCover(isPresented: .constant(selectedImage != nil)) {
             if let img = selectedImage {
                 ZStack {

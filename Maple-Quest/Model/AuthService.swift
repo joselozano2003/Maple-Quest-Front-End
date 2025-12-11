@@ -178,7 +178,7 @@ class AuthService: ObservableObject {
     }
     
     // MARK: - Update Profile
-    func updateProfile(firstName: String?, lastName: String?, phoneNumber: String?) async -> Bool {
+    func updateProfile(firstName: String?, lastName: String?, phoneNumber: String?, profilePicUrl: String? = nil) async -> Bool {
         isLoading = true
         errorMessage = nil
         
@@ -187,6 +187,7 @@ class AuthService: ObservableObject {
             if let firstName = firstName { updateData["first_name"] = firstName }
             if let lastName = lastName { updateData["last_name"] = lastName }
             if let phoneNumber = phoneNumber { updateData["phone_no"] = phoneNumber }
+            if let profilePicUrl = profilePicUrl { updateData["profile_pic_url"] = profilePicUrl }
             
             let response: APIUser = try await performRequest(
                 endpoint: "/auth/profile/",
@@ -208,6 +209,7 @@ class AuthService: ObservableObject {
             return true
             
         } catch {
+            print("Profile update failed: \(error)")
             self.errorMessage = error.localizedDescription
             isLoading = false
             return false
@@ -229,6 +231,17 @@ class AuthService: ObservableObject {
                 user.lastName = response.last_name ?? ""
                 user.phoneNumber = response.phone_no ?? ""
                 user.email = response.email
+                
+                // Download profile picture if available
+                if let profilePicUrl = response.profile_pic_url,
+                   let url = URL(string: profilePicUrl) {
+                    do {
+                        let (data, _) = try await URLSession.shared.data(from: url)
+                        user.profileImageData = data
+                    } catch {
+                        print("Failed to download profile picture: \(error)")
+                    }
+                }
                 
                 keychain.saveUserData(user)
                 self.currentUser = user
