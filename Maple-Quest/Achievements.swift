@@ -136,6 +136,15 @@ struct AchievementsView: View {
     }
 }
 // MARK: - Subviews
+func medalForRank(_ rank: Int) -> String? {
+    switch rank {
+    case 1: return "🥇"
+    case 2: return "🥈"
+    case 3: return "🥉"
+    default: return nil
+    }
+}
+
 struct AchievementCard: View {
     let achievement: Achievement
     let isUnlocked: Bool
@@ -214,8 +223,30 @@ struct LeaderboardView: View {
     
     @State private var leaderboardEntries: [LeaderboardEntry] = []
     @State private var isLoading = true
+    
     var body: some View {
         VStack(spacing: 12) {
+            
+            HStack {
+                Text("Rank")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(width: 30, alignment: .leading)
+
+                Text("User")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 45)
+
+                Text("Landmarks")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(width: 80, alignment: .center)
+            }
+            .padding(.horizontal, 10)
+            .padding(.top, 2)
+            
             if isLoading {
                 HStack {
                     Spacer()
@@ -223,33 +254,35 @@ struct LeaderboardView: View {
                     Spacer()
                 }
                 .padding()
-            } else if leaderboardEntries.isEmpty {
-                // This shouldn't happen because "You" are always an entry
-                Text("No data available")
-            } else {
+            }
+            
+            else {
                 ForEach(Array(leaderboardEntries.enumerated()), id: \.element.id) { index, entry in
+                    
                     HStack(spacing: 12) {
-                        // Rank Number
+                        
                         Text("\(index + 1)")
                             .font(.headline)
                             .foregroundColor(.secondary)
-                            .frame(width: 20)
-                        // Profile Image (Handles both URL and Local Data)
+                            .frame(width: 30)
+                        
                         Group {
-                            if entry.isMe, let data = myPhotoData, let uiImage = UIImage(data: data) {
-                                // Case 1: My local photo
+                            if entry.isMe,
+                               let data = myPhotoData,
+                               let uiImage = UIImage(data: data) {
                                 Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFill()
-                            } else if let urlString = entry.imageURL, let url = URL(string: urlString) {
-                                // Case 2: Friend's URL photo
+                            }
+                            else if let urlString = entry.imageURL,
+                                    let url = URL(string: urlString) {
                                 AsyncImage(url: url) { image in
                                     image.resizable().scaledToFill()
                                 } placeholder: {
                                     Color.gray.opacity(0.3)
                                 }
-                            } else {
-                                // Case 3: Placeholder
+                            }
+                            else {
                                 Image(systemName: "person.crop.circle.fill")
                                     .resizable()
                                     .foregroundColor(entry.isMe ? .red : .blue)
@@ -257,33 +290,42 @@ struct LeaderboardView: View {
                         }
                         .frame(width: 30, height: 30)
                         .clipShape(Circle())
-                        // Name
-                        Text(entry.isMe ? "You" : entry.name)
-                            .font(.headline)
-                            .fontWeight(entry.isMe ? .bold : .regular)
-                            .foregroundColor(entry.isMe ? .primary : .secondary)
                         
-                        Spacer()
-                        
-                        // Score
+                        HStack(spacing: 6) {
+                            Text(entry.isMe ? "You" : entry.name)
+                                .font(.headline)
+                                .fontWeight(entry.isMe ? .bold : .regular)
+                            
+                            if let medal = medalForRank(index + 1) {
+                                Text(medal)
+                                    .font(.headline)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                                                
                         Text("\(entry.score)")
                             .font(.system(.body, design: .monospaced))
                             .fontWeight(.bold)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 4)
-                            .background(entry.isMe ? Color.red.opacity(0.1) : Color.blue.opacity(0.1))
-                            .cornerRadius(8)
+                            .background(entry.isMe ? Color.red.opacity(0.2) : Color.blue.opacity(0.1))
+                            .cornerRadius(20)
+                            .frame(width: 80, alignment: .center)
+                        
                     }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(entry.isMe ? Color(.systemGray5).opacity(0.6) : Color.white)
+                    .cornerRadius(10)
+                    
                     if index != leaderboardEntries.count - 1 {
-                        Divider()
-                            .padding(.leading, 30)
+                        Divider().padding(.leading, 30)
                     }
                 }
             }
         }
-        .onAppear {
-            loadLeaderboard()
-        }
+        .onAppear { loadLeaderboard() }
     }
     
     func loadLeaderboard() {
