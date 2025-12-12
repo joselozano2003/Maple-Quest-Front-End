@@ -147,7 +147,7 @@ struct AchievementsView: View {
         }
     }
 }
-// MARK: - Subviews
+// Subviews
 func medalForRank(_ rank: Int) -> String? {
     switch rank {
     case 1: return "🥇"
@@ -242,18 +242,18 @@ struct LeaderboardView: View {
             HStack {
                 Text("Rank")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.black)
                     .frame(width: 30, alignment: .leading)
 
                 Text("User")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.black)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 45)
 
                 Text("Landmarks")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.black)
                     .frame(width: 80, alignment: .center)
             }
             .padding(.horizontal, 10)
@@ -314,6 +314,7 @@ struct LeaderboardView: View {
                             Text(entry.isMe ? "You" : entry.name)
                                 .font(.headline)
                                 .fontWeight(entry.isMe ? .bold : .regular)
+                                .foregroundColor(.black)
                             
                             if let medal = medalForRank(index + 1) {
                                 Text(medal)
@@ -336,7 +337,7 @@ struct LeaderboardView: View {
                     .padding(.vertical, 8)
                     .padding(.horizontal, 10)
                     .frame(maxWidth: .infinity)
-                    .background(entry.isMe ? Color(.systemGray5).opacity(0.6) : Color.white)
+                    .background(entry.isMe ? Color.gray.opacity(0.15) : Color.white)
                     .cornerRadius(10)
                     
                     if index != leaderboardEntries.count - 1 {
