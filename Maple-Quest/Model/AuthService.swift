@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-// MARK: - API Response Models
+// API Response Models
 struct AuthResponse: Codable {
     let user: APIUser
     let tokens: TokenPair
@@ -44,7 +44,7 @@ struct RegisterRequest: Codable {
     let phone_no: String?
 }
 
-// MARK: - Authentication Service
+// Authentication Service
 @MainActor
 class AuthService: ObservableObject {
     static let shared = AuthService()
@@ -62,7 +62,7 @@ class AuthService: ObservableObject {
         checkAuthenticationStatus()
     }
     
-    // MARK: - Authentication Status
+    // Authentication Status
     private func checkAuthenticationStatus() {
         if let accessToken = keychain.getAccessToken(),
            let userData = keychain.getUserData() {
@@ -72,7 +72,7 @@ class AuthService: ObservableObject {
         self.isInitialized = true
     }
     
-    // MARK: - Login
+    // Login
     func login(email: String, password: String) async {
         isLoading = true
         errorMessage = nil
@@ -115,7 +115,7 @@ class AuthService: ObservableObject {
         isLoading = false
     }
     
-    // MARK: - Register
+    // Register
     func register(email: String, password: String, firstName: String?, lastName: String?, phoneNumber: String?) async {
         isLoading = true
         errorMessage = nil
@@ -164,7 +164,7 @@ class AuthService: ObservableObject {
         isLoading = false
     }
     
-    // MARK: - Logout
+    // Logout
     func logout() {
         keychain.clearAll()
         UserDefaults.standard.removeObject(forKey: "backend_user_id")
@@ -172,12 +172,12 @@ class AuthService: ObservableObject {
         isAuthenticated = false
     }
     
-    // MARK: - Get Backend User ID
+    // Get Backend User ID
     func getBackendUserId() -> String? {
         return UserDefaults.standard.string(forKey: "backend_user_id")
     }
     
-    // MARK: - Update Profile
+    // Update Profile
     func updateProfile(firstName: String?, lastName: String?, phoneNumber: String?, profilePicUrl: String? = nil) async -> Bool {
         isLoading = true
         errorMessage = nil
@@ -216,7 +216,7 @@ class AuthService: ObservableObject {
         }
     }
     
-    // MARK: - Fetch Profile
+    // Fetch Profile
     func fetchProfile() async -> Bool {
         do {
             let response: APIUser = try await performRequest(
@@ -255,7 +255,7 @@ class AuthService: ObservableObject {
         }
     }
     
-    // MARK: - Refresh Token
+    // Refresh Token
     func refreshToken() async -> Bool {
         guard let refreshToken = keychain.getRefreshToken() else {
             logout()
@@ -278,7 +278,7 @@ class AuthService: ObservableObject {
         }
     }
     
-    // MARK: - Generic API Request
+    // Generic API Request
     private func performRequest<T: Codable, U: Codable>(
         endpoint: String,
         method: String,
@@ -343,7 +343,7 @@ class AuthService: ObservableObject {
     }
 }
 
-// MARK: - Auth Errors
+// Auth Errors
 enum AuthError: LocalizedError {
     case invalidURL
     case invalidResponse

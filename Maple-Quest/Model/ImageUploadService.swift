@@ -154,7 +154,7 @@ class ImageUploadService {
         )
     }
     
-    // MARK: - Private Methods
+    // Private Methods
     
     /// Upload to S3 using presigned URL
     /// No AWS credentials needed - backend provides authenticated URL
@@ -196,7 +196,7 @@ class ImageUploadService {
     }
 }
 
-// MARK: - UIImage Extension for Resizing
+// UIImage Extension for Resizing
 
 extension UIImage {
     func resized(to targetSize: CGSize) -> UIImage {

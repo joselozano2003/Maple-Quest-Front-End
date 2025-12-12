@@ -17,7 +17,7 @@ class KeychainService {
         static let userData = "user_data"
     }
     
-    // MARK: - Token Management
+    // Token Management
     func saveTokens(access: String, refresh: String) {
         save(key: Keys.accessToken, value: access)
         save(key: Keys.refreshToken, value: refresh)
@@ -31,7 +31,7 @@ class KeychainService {
         return get(key: Keys.refreshToken)
     }
     
-    // MARK: - User Data Management
+    // User Data Management
     func saveUserData(_ user: User) {
         if let encoded = try? JSONEncoder().encode(user) {
             save(key: Keys.userData, data: encoded)
@@ -46,14 +46,14 @@ class KeychainService {
         return nil
     }
     
-    // MARK: - Clear All
+    // Clear All
     func clearAll() {
         delete(key: Keys.accessToken)
         delete(key: Keys.refreshToken)
         delete(key: Keys.userData)
     }
     
-    // MARK: - Private Keychain Operations
+    // Private Keychain Operations
     private func save(key: String, value: String) {
         let data = value.data(using: .utf8)!
         save(key: key, data: data)

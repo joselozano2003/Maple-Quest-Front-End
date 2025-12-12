@@ -118,7 +118,7 @@ struct AchievementsView: View {
         }
     }
     
-    // MARK: - Logic Helpers
+    // Logic Helpers
     
     func isUnlocked(_ achievement: Achievement) -> Bool {
         switch achievement.criteria {

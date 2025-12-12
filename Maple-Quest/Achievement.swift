@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Enums
+// Enums
 
 enum AchievementLevel: String, CaseIterable {
     case bronze
@@ -31,7 +31,7 @@ enum AchievementCriteria {
     case specificLandmark(String) // e.g., Visit "Niagara Falls"
 }
 
-// MARK: - Achievement Struct
+// Achievement Struct
 
 struct Achievement: Identifiable {
     let id = UUID()
@@ -42,11 +42,11 @@ struct Achievement: Identifiable {
     let criteria: AchievementCriteria
 }
 
-// MARK: - Data Source
+// Data Source
 
 let allAchievements: [Achievement] = [
     
-    // MARK: - MILESTONES (Count Based)
+    // MILESTONES (Count Based)
     
     Achievement(
         title: "First Steps",
@@ -77,7 +77,7 @@ let allAchievements: [Achievement] = [
         criteria: .visitCount(18)
     ),
 
-    // MARK: - BRONZE TIER (Accessible / Popular Spots)
+    // BRONZE TIER (Accessible / Popular Spots)
     
     Achievement(
         title: "Mist Walker",
@@ -108,7 +108,7 @@ let allAchievements: [Achievement] = [
         criteria: .specificLandmark("Montmorency Falls")
     ),
 
-    // MARK: - SILVER TIER (Historic & Cultural Sites)
+    // SILVER TIER (Historic & Cultural Sites)
     
     Achievement(
         title: "Capital City",
@@ -146,7 +146,7 @@ let allAchievements: [Achievement] = [
         criteria: .specificLandmark("Halifax Citadel")
     ),
 
-    // MARK: - GOLD TIER (Nature & Architecture)
+    // GOLD TIER (Nature & Architecture)
     
     Achievement(
         title: "Sky High",
@@ -184,7 +184,7 @@ let allAchievements: [Achievement] = [
         criteria: .specificLandmark("Capilano Suspension Bridge")
     ),
 
-    // MARK: - PLATINUM TIER (Remote / Special Locations)
+    // PLATINUM TIER (Remote / Special Locations)
     
     Achievement(
         title: "Rocky Mountain High",
