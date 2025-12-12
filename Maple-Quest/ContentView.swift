@@ -72,7 +72,7 @@ struct ContentView: View {
         // ------------------
     }
     
-    // MARK: - Persistence Logic
+    // Persistence Logic
     
     // Generates a unique key for the current user (e.g., "visitedLandmarks_john@email.com")
     private var userDataKey: String {

@@ -25,9 +25,6 @@ struct User: Identifiable, Codable {
         "\(firstName) \(lastName)"
     }
     
-//    var formattedPhone: String {
-//        "\(phoneCode) \(phoneNumber)"
-//    }
     var formattedPhone: String {
         let digits = phoneNumber.filter(\.isNumber)
         

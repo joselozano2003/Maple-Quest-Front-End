@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Friend Model
+// Friend Model
 
 struct Friend: Identifiable, Codable {
     let user_id: String
@@ -40,7 +40,7 @@ struct Friend: Identifiable, Codable {
     }
 }
 
-// MARK: - Friend Request Model
+// Friend Request Model
 
 struct FriendRequest: Identifiable, Codable {
     let id: Int

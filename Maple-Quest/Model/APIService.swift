@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - API Response Models
+// API Response Models
 
 // Friend-Related
 struct FriendRequestResponse: Codable {
@@ -95,7 +95,7 @@ struct UpdatePointsResponse: Codable {
     let total_points: Int
 }
 
-// MARK: - Error Types
+// Error Types
 
 enum APIError: LocalizedError {
     case invalidURL
@@ -126,7 +126,7 @@ enum APIError: LocalizedError {
     }
 }
 
-// MARK: - Main APIService Class
+// Main APIService Class
 
 class APIService {
     static let shared = APIService()
@@ -136,7 +136,7 @@ class APIService {
     
     private init() {}
 
-    // MARK: - Generic Request Method
+    // Generic Request Method
     private func performRequest<T: Codable>(
         endpoint: String,
         method: String = "GET",
@@ -213,7 +213,7 @@ class APIService {
         print("Points synced to server: \(points)")
     }
 
-    // MARK: - Friend Endpoints
+    // Friend Endpoints
 
     /// Sends a friend request via email or phone number (POST /api/friend-requests/add_friend/)
     func addFriend(email: String? = nil, phoneNumber: String? = nil) async throws -> FriendRequestResponse {
@@ -260,7 +260,7 @@ class APIService {
         )
     }
 
-    // MARK: - Location Endpoints
+    // Location Endpoints
     
     /// Gets all locations (GET /api/locations/)
     func getLocations() async throws -> [LocationResponse] {
@@ -308,14 +308,14 @@ class APIService {
         )
     }
 
-    // MARK: - Visit Endpoints
+    // Visit Endpoints
     
     /// Gets the current user's visit history (GET /api/visits/)
     func getVisits() async throws -> [VisitResponse] {
         return try await performRequest(endpoint: "/api/visits/")
     }
 
-    // MARK: - Image Endpoints
+    // Image Endpoints
     
     /// Generates a presigned S3 URL for uploading an image (POST /api/users/generate_upload_url/)
     func generateUploadURL(filename: String) async throws -> UploadURLResponse {
@@ -363,7 +363,7 @@ class APIService {
         )
     }
 
-    // MARK: - Achievement Endpoints
+    // Achievement Endpoints
     
     /// Gets all achievements (GET /api/achievements/)
     func getAchievements() async throws -> [AchievementResponse] {
