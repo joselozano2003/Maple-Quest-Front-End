@@ -42,7 +42,7 @@ Update the backend URL in `Model/APIConfig.swift`:
 ```swift
 static let baseURL = "http://localhost:8000" // For local development
 // or
-static let baseURL = "https://your-backend-domain.com" // For production
+static let baseURL = "https://aws-domain.com" // For production
 ```
 
 ### Authentication Flow
