@@ -10,13 +10,6 @@ A location-based social iOS application built with SwiftUI that connects to the 
 - **Achievements**: Earn points and unlock achievements for exploring
 - **Profile Management**: Customize your profile and track your progress
 
-## Tech Stack
-
-- **SwiftUI** - Modern iOS UI framework
-- **Core Location** - GPS and location services
-- **PhotosUI** - Camera and photo picker integration
-- **URLSession** - REST API communication with Django backend
-
 ## Getting Started
 
 ### Prerequisites
